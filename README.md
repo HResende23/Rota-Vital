@@ -9,6 +9,7 @@ O **FlowForge Engine** é um motor de workflow e automação de processos dinâm
 * Hilton Resende Montes Neto
 * Jardel Simplicio de Oliveira Junior
 * Dayanne Cristina Moraes Inacio
+* Rodrigo Cavalcanti Albuquerque Rodrigues
 
 ## 🚀 Funcionalidades Principais
 
