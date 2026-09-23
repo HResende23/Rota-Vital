@@ -1,80 +1,78 @@
-# ⚙️ FlowForge Engine — Motor de Workflow & Automação de Processos
+# Rota Vital 🩸
 
-O **FlowForge Engine** é um motor de workflow e automação de processos dinâmico desenvolvido em **Java** e **Spring Boot**. O sistema permite que usuários configurem, executem e rastreiem sequências personalizadas de tarefas e fluxos de aprovação de forma totalmente flexível e programática.
+O **Rota Vital** é uma plataforma inteligente voltada para a **gestão e distribuição eficiente de hemocomponentes** (sangue, plasma, plaquetas, etc.). O sistema conecta hemocentros, hospitais e unidades de saúde para otimizar a logística, evitar o desperdício de bolsas de sangue e garantir que vidas sejam salvas em tempo hábil.
 
 ---
-
-## Integrantes do Projeto
-
-* Hilton Resende Montes Neto
-* Jardel Simplicio de Oliveira Junior
-* Dayanne Cristina Moraes Inacio
-* Rodrigo Cavalcanti Albuquerque Rodrigues
 
 ## 🚀 Funcionalidades Principais
 
-*   **Configuração Dinâmica:** Criação de fluxos customizados (Ex: *"Se aprovado pelo Gerente, envie para o Diretor; se rejeitado, volte ao Início"*).
-*   **Gatilhos Automatizados:** Disparo de ações automáticas baseadas em eventos do ciclo de vida do processo.
-*   **Histórico e Auditoria:** Rastreamento completo de cada mudança de estado e decisão tomada dentro de um fluxo.
-*   **Arquitetura Extensível:** Pronto para integração com serviços externos de notificação (e-mail, mensageria, etc.).
-
----
-
-## 🧠 Foco em Programação Orientada a Objetos (POO)
-
-O core do motor foi desenhado utilizando **Design Patterns** clássicos para garantir baixo acoplamento e alta extensibilidade:
-
-*   **State Pattern:** Utilizado para gerenciar de forma isolada os estados de cada `Processo` (ex: *Rascunho*, *Em Validação*, *Aprovado*, *Rejeitado*), eliminando condicionais (`if/else`) complexas.
-*   **Chain of Responsibility Pattern:** Aplicado na fila de tarefas e aprovações, permitindo que múltiplos `Avaliadores` processem ou encaminhem a demanda dinamicamente pela cadeia.
-
----
-
-## 🏗️ Estrutura de Classes Principais
-
-A arquitetura do domínio está dividida nos seguintes componentes chave:
-
-*   **`Processo`**: Entidade principal que carrega o estado atual, o histórico e o contexto do fluxo.
-*   **`Tarefa`**: Unidade de trabalho individual a ser executada dentro do processo.
-*   **`Gatilho`**: Componente responsável por disparar transições ou ações automáticas.
-*   **`Avaliador`**: Representa os nós de decisão ou usuários responsáveis por aprovar/rejeitar etapas.
-*   **`Historico`**: Registro imutável de auditoria contendo logs de todas as transições e responsáveis.
+* **Controle de Estoque:** Monitoramento em tempo real dos níveis de hemocomponentes por tipo sanguíneo e fator Rh.
+* **Alertas de Validade:** Notificações automáticas para itens próximos ao vencimento.
+* **Roteirização Inteligente:** Otimização de rotas de entrega entre hemocentros e hospitais parceiros.
+* **Solicitações de Urgência:** Canal direto para hospitais solicitarem bolsas de sangue em situações críticas.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-*   **Java** 
-*   **Spring Boot 3.x**
-*   **Spring Data JPA** (Persistência de dados)
-*   **PostgreSQL** / **H2 Database** (Banco de dados)
-*   **Maven** (Gerenciador de dependências)
+> *Nota: Substitua ou adicione as tecnologias reais do seu projeto.*
+
+* **Frontend:** [React.js / Vue.js / Blade / HTML&CSS]
+* **Backend:** [Node.js / Python / PHP / Java]
+* **Banco de Dados:** [PostgreSQL / MySQL / MongoDB]
+* **Mapas & Logística:** [Google Maps API / OpenStreetMap]
 
 ---
 
-## 🏁 Como Executar o Projeto
+## 📦 Como Executar o Projeto
 
 ### Pré-requisitos
-*   Java JDK instalado.
-*   Maven instalado (opcional, pode usar o `./mvnw` incluso).
+Antes de começar, você vai precisar ter instalado em sua máquina:
+* [Git](https://git-scm.com)
+* [Node.js](https://nodejs.org) (ou outra tecnologia correspondente)
 
-### Passos para execução
-1. Clone o repositório:
+### Passo a Passo
+
+1. **Clone o repositório:**
    ```bash
    git clone https://github.com
    ```
-2. Acesse a pasta do projeto:
+
+2. **Acesse a pasta do projeto:**
    ```bash
-   cd flowforge-engine
-   ```
-3. Execute a aplicação:
-   ```bash
-   ./mvnw spring-boot:run
+   cd rota-vital
    ```
 
-A API estará disponível por padrão em `http://localhost:8080`.
+3. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
+
+4. **Execute a aplicação em modo de desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
 
 ---
 
+## 🤝 Como Contribuir
+
+1. Faça um **Fork** do projeto.
+2. Crie uma nova **Branch** com sua modificação: `git checkout -b feature/minha-melhoria`.
+3. Salve suas alterações e faça o **Commit**: `git commit -m 'Adiciona nova funcionalidade'`.
+4. Envie para o seu repositório: `git push origin feature/minha-melhoria`.
+5. Abra um **Pull Request**.
+
+---
+
+## Integrantes do Projeto
+
+- Hilton Resende Montes Neto
+- Jardel Simplicio de Oliveira Junior
+- Dayanne Cristina Moraes Inacio
+- Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos
+
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
