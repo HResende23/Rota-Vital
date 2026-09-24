@@ -33,7 +33,6 @@ O Rota Vital é uma plataforma robusta de logística corporativa e gerenciamento
 * **PostgreSQL** como banco de dados relacional principal.
 * **Hibernate / JPA** para mapeamento objeto-relacional (ORM).
 
-
 ------------------------------
 ## 📁 Estrutura do Projeto
 
@@ -193,19 +192,79 @@ Para deploy em nuvem (AWS, DigitalOcean, GCP), recomenda-se a utilização do ar
    5. Abra um Pull Request detalhando as alterações realizadas.
 
 
-## 🌟 Histórias:
+# Especificação Técnica de Histórias de Usuário
 
-   T01 — HU01 — Estoque (Controle biológico, tipagem e regras FEFO).
-   
-   T02 — HU02 — Requisição (Entrada de pedidos e fluxos especiais de urgência).
-   
-   T03 — HU03 — Alocação (Cruzamento inteligente e compatibilidade imunológica automática).
-   
-   T04 — HU04 — Rota (Roteirização multiponto e cálculo de tempo logístico crítico).
-   
-   T05 — HU05 — Monitoramento (Telemetria com sensores IoT para checagem da cadeia de frio).
+Este documento mapeia os requisitos de negócio, fluxos lógicos e critérios de aceite aplicados ao desenvolvimento das funcionalidades do ecossistema **Rota Vital**.
+
+---
+
+### 🩸 T01 — HU01 — Estoque
+**Descrição:** Gestão biológica rigorosa de entrada, classificação e ciclo de vida de bolsas de sangue.
+* **Escopo Técnico:**
+  * Cadastro detalhado de bolsas informando volume (ml), tipo sanguíneo (A, B, AB, O), Fator Rh (+/-), fenótipos raros e data de extração/vencimento.
+  * Implementação estrita do modelo **FEFO** (*First Expired, First Out*): o sistema prioriza automaticamente a saída de bolsas com vencimento mais próximo para evitar desperdício de material biológico.
+  * Alertas visuais na interface administrativa para lotes em estado crítico de validade.
+
+### 📥 T02 — HU02 — Requisição
+**Descrição:** Canal centralizado de entrada de demandas hospitalares com fluxos prioritários.
+* **Escopo Técnico:**
+  * Interface para hospitais credenciados preencherem requisições de hemocomponentes.
+  * Divisão clara em dois fluxos de atendimento:
+    * **Rotina:** Segue a ordem de chegada padrão da fila de triagem.
+    * **Urgência Máxima:** Ignora a fila comum, dispara notificações sonoras/visuais no painel do hemocentro e bloqueia preventivamente o estoque compatível para atendimento imediato.
+
+### 🧠 T03 — HU03 — Alocação
+**Descrição:** Sistema especialista de cruzamento inteligente e compatibilidade imunológica.
+* **Escopo Técnico:**
+  * Motor de regras automatizado que avalia a requisição do hospital versus o estoque disponível.
+  * Validação eletrônica de compatibilidade (Ex: se o pedido solicita sangue tipo `A-`, o sistema restringe a alocação estritamente para bolsas `A-` ou `O-`).
+  * Bloqueio físico-lógico da bolsa após alocação bem-sucedida, impedindo que ela seja selecionada por outro operador enquanto aguarda o despacho.
+
+### 🗺️ T04 — HU04 — Rota
+**Descrição:** Roteirização multiponto e cálculo do tempo logístico para o transporte de emergência.
+* **Escopo Técnico:**
+  * Integração com serviços de mapas para gerar rotas dinâmicas a partir do hemocentro central até a unidade hospitalar de destino.
+  * Algoritmo de cálculo de tempo crítico baseado em tráfego atual e distância física.
+  * Suporte a rotas multiponto, permitindo planejar uma única viagem de entrega otimizada que atenda a múltiplos hospitais vizinhos na mesma saída de frota.
+
+### ❄️ T05 — HU05 — Monitoramento
+**Descrição:** Telemetria IoT contínua com foco na segurança e preservação da cadeia de frio.
+* **Escopo Técnico:**
+  * Módulo de recepção de dados via requisições contínuas, simulando a telemetria de sensores de temperatura acoplados às maletas de transporte térmico.
+  * Definição de limites seguros de conservação para cada tipo de hemocomponente (ex: Concentrado de Hemácias entre 2°C e 6°C).
+  * Emissão de alertas críticos de infração de temperatura para a equipe de logística caso os parâmetros climáticos ideais sejam rompidos durante o trajeto de entrega.
+
+### 🎒 T06 — HU06 — Fracionamento e Processamento de Sangue Total
+**Descrição:** Controle da etapa laboratorial onde o sangue total coletado é centrifugado e dividido em múltiplos hemocomponentes.
+* **Escopo Técnico:**
+  * **Ciclo de Desmembramento:** Interface e lógica para dar baixa em 1 bolsa de "Sangue Total" e gerar automaticamente a entrada de seus subprodutos derivados (geralmente 1 Concentrado de Hemácias, 1 Plasma Fresco Congelado e 1 Concentrado de Plaquetas).
+  * **Rastreabilidade por Código de Barras Matriz:** Vinculação do código identificador único da bolsa mãe de sangue total a todas as sub-bolsas geradas no processo, garantindo que o histórico do doador permaneça atrelado aos derivados.
+  * **Regras de Validade Diferenciadas:** Aplicação de regras automáticas de expiração distintas por tipo de hemocomponente gerado (ex: Plaquetas expiram em até 5 dias em agitação contínua, enquanto o Plasma pode durar até 1 ano congelado).
+
+### 🏷️ T07 — HU07 — Triagem e Validação Sorológica
+**Descrição:** Bloqueio de segurança e liberação de bolsas para o estoque geral apenas após a inserção e validação de exames laboratoriais negativos.
+* **Escopo Técnico:**
+  * **Estoque em Quarentena:** Toda bolsa recém-coletada entra nativamente com o status "Em Quarentena", ficando invisível e impossibilitada de ser alocada ou despachada para os hospitais.
+  * **Módulo de Laudos Sorológicos:** Tela para inserção dos resultados dos testes obrigatórios (HIV, Hepatite B e C, Sífilis, Chagas e HTLV).
+  * **Liberação ou Descarte Automatizado:** 
+    * Se **todos** os testes forem negativos, o sistema altera o status da bolsa para "Disponível" (enviando-a para a lógica FEFO).
+    * Se **qualquer** teste apresentar resultado reagente/positivo, o sistema bloqueia permanentemente a bolsa, emite um alerta reservado e gera uma ordem de descarte térmico/biológico seguro com registro de protocolo.
+
+## 🎨 Design da Interface (Figma)
+
+O protótipo de alta fidelidade e o mapeamento de experiência do usuário (UX/UI) das telas do sistema (`index.html`, `requisicao.html`, etc.) foram desenvolvidos utilizando o Figma.
+
+* 🔗 **Link do Projeto:** https://www.figma.com/design/CZ4BYx3COy4SKGpxZ36Zu1/Rota-Vital-%25E2%2580%2594-Entrega-01?node-id=0-1&p=f&t=bXHbJWjJVn23hN8B-0
+
 
 -------
+
+## Integrantes
+
+- Hilton Resende Montes Neto
+- Jardel Simplicio de Oliveira Junior
+- Dayanne Cristina Moraes Inacio
+- Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos
 
 ## Integrantes
 
