@@ -69,3 +69,10 @@ O teste parametrizado verifica que o Spring serve as cinco páginas como HTML. N
 ## Git
 
 O commit inicial usa a mensagem `feat: initialize Spring Boot with five low-fidelity wireframes`. Arquivos gerados, configurações locais de IDE e segredos não devem ser versionados. O envio remoto depende de um repositório de destino com acesso de escrita.
+
+## Integrantes
+
+- Hilton Resende Montes Neto
+- Jardel Simplicio de Oliveira Junior
+- Dayanne Cristina Moraes Inacio
+- Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos
