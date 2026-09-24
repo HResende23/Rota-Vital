@@ -1,7 +1,7 @@
 ## Rota Vital — Gestão e Distribuição de Hemocomponentes
 O Rota Vital é uma plataforma robusta de logística corporativa e gerenciamento de saúde voltada para otimizar o fluxo de armazenamento, controle de estoque e distribuição de hemocomponentes (como sangue total, plasma, plaquetas e crioprecipitado) entre hemocentros centrais e unidades hospitalares. O sistema foca em mitigar o desperdício de bolsas por vencimento e acelerar o tempo de resposta em cenários de extrema urgência médica.
 
-## 🚀 Funcionalidades## 📦 Controle de Estoque Inteligente
+## 🚀 Funcionalidades
 
 * Rastreamento em tempo real do volume de hemocomponentes por tipo sanguíneo, fator Rh e fenótipos raros.
 * Alertas visuais e notificações automáticas para bolsas com data de validade próxima do vencimento (técnica FIFO/FEFO).
