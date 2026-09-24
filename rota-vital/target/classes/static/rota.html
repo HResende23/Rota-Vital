@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Rota Vital: planejamento de rota — protótipo acadêmico de baixa fidelidade.">
+        <title>
+            Rota | Rota Vital
+        </title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
+    </head>
+    <body>
+        <a class="skip-link" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+        <header class="topbar">
+            <strong>
+                ROTA VITAL
+            </strong>
+            <span>
+                PROTÓTIPO LO-FI / DADOS SINTÉTICOS
+            </span>
+        </header>
+        <div class="layout">
+            <aside class="sidebar">
+                <h2>
+                    DISTRIBUIÇÃO
+                </h2>
+                <nav aria-label="Telas do protótipo">
+                    <a href="index.html">
+                        01 Estoque
+                    </a>
+                    <a href="requisicao.html">
+                        02 Requisição
+                    </a>
+                    <a href="alocacao.html">
+                        03 Alocação
+                    </a>
+                    <a href="rota.html" aria-current="page">
+                        04 Rota
+                    </a>
+                    <a href="monitoramento.html">
+                        05 Monitoramento
+                    </a>
+                </nav>
+                <div class="unit">
+                    <strong>
+                        Hemocentro
+                    </strong>
+                    <span>
+                        Central · simulação
+                    </span>
+                </div>
+            </aside>
+            <main id="conteudo" class="screen screen-4">
+                <header class="page-heading">
+                    <p>
+                        T04 / HU04
+                    </p>
+                    <h1>
+                        Planejamento de rota
+                    </h1>
+                    <span>
+                        Planejador logístico
+                    </span>
+                </header>
+                <div class="page-content">
+                    <div class="fields three">
+                        <label>
+                            Requisição alocada
+                            <input type="text" value="RV-014 · 2 bolsas CH" readonly>
+                        </label>
+                        <label>
+                            Saída em 14/09/2026
+                            <input type="text" value="09:30 · Hemocentro" readonly>
+                        </label>
+                        <label>
+                            Transporte
+                            <input type="text" value="Caixa CX-01 · 4 bolsas" readonly>
+                        </label>
+                    </div>
+                    <h2 class="section-title">
+                        Grafo sintético · comparação de caminhos
+                    </h2>
+                    <div class="route-layout">
+                        <figure class="route-graph" aria-label="Hemocentro Central, saída 09:30. Caminho direto: 40 minutos, chegada ao Hospital Aurora às 10:10. Alternativa via P1: 50 minutos.">
+                            <div class="route-node origin">
+                                <strong>
+                                    Hemocentro
+                                </strong>
+                                <span>
+                                    Central · 09:30
+                                </span>
+                            </div>
+                            <div class="direct">
+                                <strong>
+                                    40 min
+                                </strong>
+                            </div>
+                            <div class="detour">
+                                <span>
+                                    Via P1: 50 min
+                                </span>
+                            </div>
+                            <div class="route-node destination">
+                                <strong>
+                                    Hospital Aurora
+                                </strong>
+                                <span>
+                                    Chegada · 10:10
+                                </span>
+                            </div>
+                        </figure>
+                        <section class="panel feasibility">
+                            <h2>
+                                ROTA VIÁVEL
+                            </h2>
+                            <p>
+                                Janela: 10:00–11:00
+                            </p>
+                            <p>
+                                Atendimento: 10:10–10:15
+                            </p>
+                            <p>
+                                Carga: 2 / 4 bolsas
+                            </p>
+                            <p>
+                                Tempo total: 45 / 90 min
+                            </p>
+                            <p>
+                                Validade na entrega: OK
+                            </p>
+                        </section>
+                    </div>
+                    <h2 class="section-title">
+                        Alternativa proposta: caminho direto · menor duração viável.
+                    </h2>
+                    <p>
+                        A capacidade, a janela e a autonomia térmica foram consideradas.
+                    </p>
+                    <div class="actions">
+                        <a class="button" href="monitoramento.html" aria-label="Confirmar planejamento — abrir próxima tela do protótipo">
+                            Confirmar planejamento
+                        </a>
+                        <span>
+                            Resultado esperado: R-008 · Planejada
+                        </span>
+                    </div>
+                </div>
+                <footer>
+                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>
