@@ -1,74 +1,158 @@
-# Rota Vital
+## Rota Vital — Gestão e Distribuição de Hemocomponentes
+O Rota Vital é uma plataforma robusta de logística corporativa e gerenciamento de saúde voltada para otimizar o fluxo de armazenamento, controle de estoque e distribuição de hemocomponentes (como sangue total, plasma, plaquetas e crioprecipitado) entre hemocentros centrais e unidades hospitalares. O sistema foca em mitigar o desperdício de bolsas por vencimento e acelerar o tempo de resposta em cenários de extrema urgência médica.
 
-Primeiro incremento: projeto Spring Boot com cinco páginas HTML e CSS de baixa fidelidade, baseados no prototipo do figma(https://www.figma.com/proto/CZ4BYx3COy4SKGpxZ36Zu1/Rota-Vital-%E2%80%94-Entrega-01?node-id=1-72&starting-point-node-id=1%3A2).
+## 🚀 Funcionalidades## 📦 Controle de Estoque Inteligente
 
-## Executar no VS Code
+* Rastreamento em tempo real do volume de hemocomponentes por tipo sanguíneo, fator Rh e fenótipos raros.
+* Alertas visuais e notificações automáticas para bolsas com data de validade próxima do vencimento (técnica FIFO/FEFO).
 
-Requisitos: JDK 17 ou superior compatível (recomendado JDK 21 ou 25), variável JAVA_HOME configurada e acesso à internet no primeiro uso. Instale as extensões Extension Pack for Java e Spring Boot Extension Pack no VS Code.
+## 📍 Roteirização e Logística de Emergência
 
-1. Extraia o projeto e abra a pasta que contém `pom.xml` no VS Code.
-2. Aguarde a importação do projeto Maven.
-3. No terminal PowerShell do Windows, execute:
+* Algoritmo de roteirização integrado que calcula trajetos prioritários entre o hemocentro e os hospitais solicitantes.
+* Monitoramento de temperatura simulado ou integrado para garantir a cadeia de frio durante o transporte.
 
-```powershell
-.\mvnw.cmd spring-boot:run
-```
+## 🏥 Gestão de Demandas Hospitalares
 
-No Linux/macOS:
+* Portal do Hospital para a criação de pedidos de rotina ou pedidos de emergência máxima (com prioridade na fila de despacho).
+* Fluxo de aprovação e triagem automatizada com base na disponibilidade atual do hemocentro.
 
-```sh
-./mvnw spring-boot:run
-```
+## 🔍 Rastreabilidade de Ponta a Ponta
 
-4. Abra <http://localhost:8080/>. Para encerrar, pressione Ctrl+C no terminal.
+* Histórico completo do ciclo de vida da bolsa: Coleta ➔ Processamento/Fracionamento ➔ Armazenamento ➔ Despacho ➔ Transfusão/Descarte.
 
-O Maven Wrapper fornece a versão do Maven usada pelo projeto; não é necessário instalar Maven separadamente. Também é possível executar `RotaVitalApplication` pelo VS Code.
+------------------------------
+## 🛠️ Tecnologias Utilizadas## Backend
 
-## Telas
+* Node.js com TypeScript e framework NestJS.
+* TypeORM para mapeamento objeto-relacional.
 
-| Página | Arquivo em `src/main/resources/static/` |
-| --- | --- |
-| Estoque | `index.html` |
-| Requisição hospitalar | `requisicao.html` |
-| Alocação de bolsas | `alocacao.html` |
-| Planejamento de rota | `rota.html` |
-| Monitoramento da remessa | `monitoramento.html` |
+## Frontend
 
-O CSS compartilhado fica em `src/main/resources/static/css/styles.css`.
+* React.js com Next.js (App Router).
+* Tailwind CSS e Shadcn/ui para componentes de interface.
 
-As páginas são HTML estático servido pelo Spring Boot. Não há Thymeleaf ou controladores: a pasta `templates` exigiria um mecanismo de renderização desnecessário neste incremento. É possível editar o HTML e o CSS diretamente e abri-los no navegador para revisão visual.
+## Infraestrutura e Bancos de Dados
 
-## Escopo do primeiro commit
+* PostgreSQL como banco de dados relacional principal.
+* Redis para gerenciamento de cache de rotas e controle de sessões.
+* Docker e Docker Compose para containerização de ambientes.
 
-- Spring Boot 4.1.1, Java 17 e Maven Wrapper gerado pelo Spring Initializr.
-- Cinco telas em tons de cinza, com menu lateral e destaque da página atual.
-- Links de avanço entre requisição, alocação, rota e monitoramento.
-- Campos somente leitura e dados sintéticos fixos. Os botões de avanço não enviam, reservam ou salvam dados.
-- Consultar saldo e Reconhecer alerta são botões ilustrativos desabilitados.
-- HTML semântico, navegação por teclado, link para pular ao conteúdo e adaptações para telas menores.
-- Sem JavaScript, API de negócio, banco, pipeline ou contêiner.
+------------------------------
+## 📁 Estrutura do Projeto
 
-A aplicação local escuta somente em `127.0.0.1`. Não foi implementada autenticação no Spring Boot. A revisão hospedada, quando disponível, usa o controle de acesso privado da plataforma de hospedagem e contém os mesmos arquivos estáticos.
+rota-vital/
+├── apps/
+│   ├── api/                 # Código-fonte do Backend (NestJS)
+│   │   ├── src/
+│   │   │   ├── modules/     # Estoque, Pedidos, Rotas, Usuários
+│   │   │   └── database/    # Migrations e Seeds
+│   │   └── Dockerfile
+│   └── web/                 # Código-fonte do Frontend (Next.js)
+│       ├── src/
+│       │   ├── app/         # Páginas e Rotas
+│       │   ├── components/  # Componentes de UI refratários
+│       │   └── services/    # Integração com a API
+│       └── Dockerfile
+├── docker-compose.yml       # Orquestração local (Postgres, Redis, APIs)
+└── README.md
 
-## Verificação
+------------------------------
+## 🛑 Pré-requisitos
+Antes de iniciar, instale as seguintes ferramentas em seu ambiente de desenvolvimento:
 
-```powershell
-.\mvnw.cmd test
-.\mvnw.cmd clean package
-```
+* Git
+* [Node.js v18+](https://nodejs.org/)
+* [Docker & Docker Compose](https://www.docker.com/)
 
-No Linux/macOS, use `./mvnw` no lugar de `.\mvnw.cmd`.
+------------------------------
+## ⚙️ Instalação e Execução Local## 1. Clonar o Repositório
 
-O teste parametrizado verifica que o Spring serve as cinco páginas como HTML. Nesta entrega, a análise dos arquivos confirmou a estrutura HTML, os links locais, a página ativa no menu e os campos somente leitura. A execução Maven neste ambiente foi bloqueada pela resolução de DNS do Maven Central; portanto, compilação e testes Spring ainda precisam ser executados na máquina de desenvolvimento. Não houve teste visual automatizado em navegador.
+git clone https://github.com
+cd rota-vital
 
-## Referências técnicas
+## 2. Configurar Variáveis de Ambiente
+Crie um arquivo .env dentro da pasta apps/api/ e outro dentro de apps/web/ seguindo o modelo dos arquivos .env.example presentes em cada uma delas.
+Exemplo essencial para a API (apps/api/.env):
 
-- [Requisitos oficiais do Spring Boot](https://docs.spring.io/spring-boot/system-requirements.html)
-- [Spring Initializr](https://start.spring.io/)
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rotavital
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=sua_chave_secreta_aqui
 
-## Git
+## 3. Execução via Docker (Recomendado)
+Para subir todo o ecossistema (Postgres, Redis, API e Web) de forma automatizada:
 
-O commit inicial usa a mensagem `feat: initialize Spring Boot with five low-fidelity wireframes`. Arquivos gerados, configurações locais de IDE e segredos não devem ser versionados. O envio remoto depende de um repositório de destino com acesso de escrita.
+docker-compose up -d --build
+
+A aplicação estará disponível em:
+
+* Frontend: http://localhost:3000
+* Backend API: http://localhost:3333
+
+## 4. Execução Manual (Modo Desenvolvimento)
+Caso prefira rodar os serviços fora de containers:
+Instalar dependências (na raiz do projeto):
+
+npm install
+
+Executar Migrations do Banco de Dados:
+
+npm run migration:run --workspace=apps/api
+
+Iniciar o Backend:
+
+npm run dev --workspace=apps/api
+
+Iniciar o Frontend:
+
+npm run dev --workspace=apps/web
+
+------------------------------
+## 🗺️ Documentação da API (Endpoints Principais)
+Todos os endpoints privados exigem o cabeçalho Authorization: Bearer <JWT_TOKEN>.
+## Autenticação
+
+* POST /api/auth/login - Realiza a autenticação de usuários (Hemocentro/Hospital).
+
+## Estoque (Hemocentro)
+
+* GET /api/inventory - Lista todas as bolsas de sangue disponíveis.
+* POST /api/inventory - Registra a entrada de um novo hemocomponente coletado.
+* GET /api/inventory/alerts - Retorna bolsas próximas do vencimento.
+
+## Pedidos (Hospitais)
+
+* POST /api/orders - Cria uma nova solicitação de hemocomponente (Rotina ou Emergência).
+* GET /api/orders - Lista os pedidos associados à instituição.
+* PATCH /api/orders/:id/status - Atualiza o status do pedido (Pendente, Aprovado, Em Trânsito, Entregue).
+
+------------------------------
+## 🚀 Deploy em Produção
+Para gerar as builds otimizadas de produção sem Docker:
+
+# Gerar arquivos de produção
+npm run build
+# Iniciar em modo produção
+npm run start
+
+Para deploy em nuvem (AWS, DigitalOcean, GCP), recomenda-se a utilização do arquivo docker-compose.yml configurado com variáveis de ambiente de produção e volumes persistentes para o PostgreSQL.
+------------------------------
+## 🤝 Como Contribuir
+
+   1. Faça um Fork do projeto.
+   2. Crie uma Branch para sua modificação:
+   
+   git checkout -b feature/minha-modificacao
+   
+   3. Faça o Commit seguindo o padrão Conventional Commits:
+   
+   git commit -m "feat(order): adiciona triagem automatizada por urgência"
+   
+   4. Envie para o seu repositório remoto:
+   
+   git push origin feature/minha-modificacao
+   
+   5. Abra um Pull Request detalhando as alterações realizadas.
+
 
 ## 🌟 Histórias:
 
