@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Rota Vital: alocação de bolsas — protótipo acadêmico de baixa fidelidade.">
+        <title>
+            Alocação | Rota Vital
+        </title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
+    </head>
+    <body>
+        <a class="skip-link" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+        <header class="topbar">
+            <strong>
+                ROTA VITAL
+            </strong>
+            <span>
+                PROTÓTIPO LO-FI / DADOS SINTÉTICOS
+            </span>
+        </header>
+        <div class="layout">
+            <aside class="sidebar">
+                <h2>
+                    DISTRIBUIÇÃO
+                </h2>
+                <nav aria-label="Telas do protótipo">
+                    <a href="index.html">
+                        01 Estoque
+                    </a>
+                    <a href="requisicao.html">
+                        02 Requisição
+                    </a>
+                    <a href="alocacao.html" aria-current="page">
+                        03 Alocação
+                    </a>
+                    <a href="rota.html">
+                        04 Rota
+                    </a>
+                    <a href="monitoramento.html">
+                        05 Monitoramento
+                    </a>
+                </nav>
+                <div class="unit">
+                    <strong>
+                        Hemocentro
+                    </strong>
+                    <span>
+                        Central · simulação
+                    </span>
+                </div>
+            </aside>
+            <main id="conteudo" class="screen screen-3">
+                <header class="page-heading">
+                    <p>
+                        T03 / HU03
+                    </p>
+                    <h1>
+                        Alocação de bolsas
+                    </h1>
+                    <span>
+                        Responsável pela distribuição
+                    </span>
+                </header>
+                <div class="page-content">
+                    <section class="panel ">
+                        <h2>
+                            RV-014 · Hospital Aurora · Pendente de alocação
+                        </h2>
+                        <p>
+                            2 bolsas CH para A+ | Entrega até 14/09/2026 às 11:00
+                        </p>
+                    </section>
+                    <h2 class="section-title">
+                        Proposta de reserva · compatibilidade antes do FEFO
+                    </h2>
+                    <div class="table-wrap">
+                        <table>
+                            <caption class="sr-only">
+                                Proposta ilustrativa de alocação
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Seleção
+                                    </th>
+                                    <th scope="col">
+                                        Bolsa / tipo
+                                    </th>
+                                    <th scope="col">
+                                        Vencimento
+                                    </th>
+                                    <th scope="col">
+                                        Justificativa
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        [x] 1ª
+                                    </td>
+                                    <td>
+                                        B101 · CH A+
+                                    </td>
+                                    <td>
+                                        15/09/2026 18:00
+                                    </td>
+                                    <td>
+                                        Compatível · menor validade
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [x] 2ª
+                                    </td>
+                                    <td>
+                                        B102 · CH A+
+                                    </td>
+                                    <td>
+                                        16/09/2026 18:00
+                                    </td>
+                                    <td>
+                                        Compatível · próxima validade
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [ ]
+                                    </td>
+                                    <td>
+                                        B103 · CH A+
+                                    </td>
+                                    <td>
+                                        20/09/2026 18:00
+                                    </td>
+                                    <td>
+                                        Elegível · não necessária
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        [ ]
+                                    </td>
+                                    <td>
+                                        B104 · CH B+
+                                    </td>
+                                    <td>
+                                        15/09/2026 12:00
+                                    </td>
+                                    <td>
+                                        Excluída · incompatível
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <section class="panel summary">
+                        <h2>
+                            Solicitadas: 2 / Selecionadas: 2 / Faltantes: 0
+                        </h2>
+                        <p>
+                            Matriz didática por componente. Disponibilidade revalidada na confirmação.
+                        </p>
+                    </section>
+                    <div class="actions">
+                        <a class="button" href="rota.html" aria-label="Confirmar reserva — abrir próxima tela do protótipo">
+                            Confirmar reserva
+                        </a>
+                        <span>
+                            Resultado esperado: Alocada · B101 e B102 reservadas
+                        </span>
+                    </div>
+                </div>
+                <footer>
+                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>
