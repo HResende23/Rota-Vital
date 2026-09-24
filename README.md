@@ -21,40 +21,79 @@ O Rota Vital é uma plataforma robusta de logística corporativa e gerenciamento
 * Histórico completo do ciclo de vida da bolsa: Coleta ➔ Processamento/Fracionamento ➔ Armazenamento ➔ Despacho ➔ Transfusão/Descarte.
 
 ------------------------------
-## 🛠️ Tecnologias Utilizadas## Backend
+## 🛠️ Tecnologias Utilizadas
 
-* Node.js com TypeScript e framework NestJS.
-* TypeORM para mapeamento objeto-relacional.
+### Monólito (Backend & Frontend)
+* **Java 17+** como linguagem de desenvolvimento principal.
+* **Spring Boot** para orquestração da aplicação (Spring Web, Spring Data JPA).
+* **HTML5 / CSS3** inseridos de forma nativa para a interface do usuário.
+* **Maven** como gerenciador de dependências e automação de compilação.
 
-## Frontend
+### Banco de Dados e Infraestrutura
+* **PostgreSQL** como banco de dados relacional principal.
+* **Hibernate / JPA** para mapeamento objeto-relacional (ORM).
 
-* React.js com Next.js (App Router).
-* Tailwind CSS e Shadcn/ui para componentes de interface.
-
-## Infraestrutura e Bancos de Dados
-
-* PostgreSQL como banco de dados relacional principal.
-* Redis para gerenciamento de cache de rotas e controle de sessões.
-* Docker e Docker Compose para containerização de ambientes.
 
 ------------------------------
 ## 📁 Estrutura do Projeto
 
-rota-vital/
-├── apps/
-│   ├── api/                 # Código-fonte do Backend (NestJS)
-│   │   ├── src/
-│   │   │   ├── modules/     # Estoque, Pedidos, Rotas, Usuários
-│   │   │   └── database/    # Migrations e Seeds
-│   │   └── Dockerfile
-│   └── web/                 # Código-fonte do Frontend (Next.js)
-│       ├── src/
-│       │   ├── app/         # Páginas e Rotas
-│       │   ├── components/  # Componentes de UI refratários
-│       │   └── services/    # Integração com a API
-│       └── Dockerfile
-├── docker-compose.yml       # Orquestração local (Postgres, Redis, APIs)
-└── README.md
+```text
+rota-vital-springboot/
+└── rota-vital/
+    ├── apps/
+    │   └── src/
+    │       ├── main/
+    │       │   ├── java/br/com/rotavital/
+    │       │   │   ├── controller/            # Controladores REST (Ex: EstoqueController.java)
+    │       │   │   ├── model/                 # Modelagem biológica (Entidades e Enums)
+    │       │   │   │   ├── BolsaHemoComponente.java
+    │       │   │   │   ├── StatusBolsa.java
+    │       │   │   │   ├── TipoComponente.java
+    │       │   │   │   └── TipoSanguineo.java
+    │       │   │   ├── service/               # Camada de lógica de negócio (EstoqueService.java)
+    │       │   │   └── RotaVitalApplication.java # Inicializador da aplicação Spring Boot
+    │       │   └── resources/
+    │       │       ├── static/                # Interface Frontend do ecossistema
+    │       │       │   ├── css/               # Estilizações das páginas
+    │       │       │   ├── alocacao.html      # Tela de cruzamento imunológico (T03)
+    │       │       │   ├── index.html         # Painel principal/Estoque (T01)
+    │       │       │   ├── monitoramento.html # Painel de telemetria térmica IoT (T05)
+    │       │       │   ├── requisicao.html    # Tela de pedidos de hospitais (T02)
+    │       │       │   └── rota.html          # Painel de roteirização e logística (T04)
+    │       │       └── application.properties # Parametrizações do sistema e conexão com Postgres
+    │       └── test/                             # Ambiente de testes automatizados
+    ├── .mvn/wrapper                               # Executáveis locais do Maven Wrapper
+    └── maven-wrapper.properties                   # Declaração de versão do Maven
+```
+
+---
+
+```markdown
+## 🗺️ Rotas de Acesso e Endpoints Principais
+
+### Painéis da Interface (Frontend)
+Qualquer usuário local pode acessar as telas do sistema mapeadas nos arquivos estáticos através do navegador:
+* Painel Principal (Estoque): `http://localhost:8080/index.html`
+* Painel de Requisições: `http://localhost:8080/requisicao.html`
+* Painel de Alocação Imunológica: `http://localhost:8080/alocacao.html`
+* Painel de Roteirização Logística: `http://localhost:8080/rota.html`
+* Painel de Monitoramento IoT: `http://localhost:8080/monitoramento.html`
+
+### Endpoints da API (`EstoqueController`)
+* `GET /api/estoque` - Retorna a listagem de todas as bolsas disponíveis ordenadas por vencimento (Lógica FEFO).
+* `POST /api/estoque` - Cadastra uma nova bolsa de hemocomponente inspecionada.
+* `GET /api/estoque/alertas` - Filtra e expõe lotes de bolsas biológicas com validade crítica em curto prazo.
+```
+
+<FollowUp>
+Como os arquivos HTML estão na pasta `static`, a comunicação com o backend provavelmente é feita via chamadas JavaScript (`fetch` ou `axios`). Se você quiser, posso ajudar desenvolvendo:
+* O código de **Script JavaScript** para incluir em um dos HTMLs para consumir a listagem do backend.
+* A implementação em código Java da entidade **`BolsaHemoComponente.java`** mapeada com JPA para o PostgreSQL.
+* O método lógico dentro de **`EstoqueService.java`** estruturando a ordenação de estoque usando a regra **FEFO**.
+
+Qual dessas frentes deseja implementar agora?
+</FollowUp>
+
 
 ------------------------------
 ## 🛑 Pré-requisitos
