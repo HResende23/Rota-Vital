@@ -70,6 +70,18 @@ O teste parametrizado verifica que o Spring serve as cinco páginas como HTML. N
 
 O commit inicial usa a mensagem `feat: initialize Spring Boot with five low-fidelity wireframes`. Arquivos gerados, configurações locais de IDE e segredos não devem ser versionados. O envio remoto depende de um repositório de destino com acesso de escrita.
 
+## 🌟 Histórias:
+
+   1. Validação Automatizada de Triagem: Garante que bolsas com exames imuno-hematológicos ou sorológicos alterados sejam travadas automaticamente no sistema.
+   2. Solicitação Emergencial Dinâmica: Fluxo sem burocracia para casos críticos com lógica de substituição por doador universal se necessário.
+   3. Roteirização Inteligente: Cálculo de rotas considerando o tempo limite que as caixas térmicas suportam o resfriamento biológico.
+   4. Monitoramento IoT da Cadeia de Frio: Integração com sensores de temperatura em tempo real com alertas de desvio de temperatura.
+   5. Conferência via QR Code: Processo digital à prova de falhas humanas na recepção das agências transfusionais.
+   6. Gestão FEFO (First Expired, First Out): Alertas preditivos e ordenação inteligente para minimizar o descarte de bolsas raras próximas ao vencimento.
+   7. Rastreabilidade Total ("Vênula a Vênula"): Linha do tempo auditável contendo desde a coleta no doador até a infusão no paciente receptor para fins de hemovigilância.
+
+-------
+
 ## Integrantes
 
 - Hilton Resende Montes Neto
