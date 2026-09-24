@@ -72,13 +72,15 @@ O commit inicial usa a mensagem `feat: initialize Spring Boot with five low-fide
 
 ## 🌟 Histórias:
 
-   1. Validação Automatizada de Triagem: Garante que bolsas com exames imuno-hematológicos ou sorológicos alterados sejam travadas automaticamente no sistema.
-   2. Solicitação Emergencial Dinâmica: Fluxo sem burocracia para casos críticos com lógica de substituição por doador universal se necessário.
-   3. Roteirização Inteligente: Cálculo de rotas considerando o tempo limite que as caixas térmicas suportam o resfriamento biológico.
-   4. Monitoramento IoT da Cadeia de Frio: Integração com sensores de temperatura em tempo real com alertas de desvio de temperatura.
-   5. Conferência via QR Code: Processo digital à prova de falhas humanas na recepção das agências transfusionais.
-   6. Gestão FEFO (First Expired, First Out): Alertas preditivos e ordenação inteligente para minimizar o descarte de bolsas raras próximas ao vencimento.
-   7. Rastreabilidade Total ("Vênula a Vênula"): Linha do tempo auditável contendo desde a coleta no doador até a infusão no paciente receptor para fins de hemovigilância.
+   T01 — HU01 — Estoque (Controle biológico, tipagem e regras FEFO).
+   
+   T02 — HU02 — Requisição (Entrada de pedidos e fluxos especiais de urgência).
+   
+   T03 — HU03 — Alocação (Cruzamento inteligente e compatibilidade imunológica automática).
+   
+   T04 — HU04 — Rota (Roteirização multiponto e cálculo de tempo logístico crítico).
+   
+   T05 — HU05 — Monitoramento (Telemetria com sensores IoT para checagem da cadeia de frio).
 
 -------
 
