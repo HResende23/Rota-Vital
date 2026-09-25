@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Rota Vital: monitoramento da remessa — protótipo acadêmico de baixa fidelidade.">
+        <title>
+            Monitoramento | Rota Vital
+        </title>
+        <link rel="stylesheet" href="css/styles.css">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
+    </head>
+    <body>
+        <a class="skip-link" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+        <header class="topbar">
+            <strong>
+                ROTA VITAL
+            </strong>
+            <span>
+                PROTÓTIPO LO-FI / DADOS SINTÉTICOS
+            </span>
+        </header>
+        <div class="layout">
+            <aside class="sidebar">
+                <h2>
+                    DISTRIBUIÇÃO
+                </h2>
+                <nav aria-label="Telas do protótipo">
+                    <a href="index.html">
+                        01 Estoque
+                    </a>
+                    <a href="requisicao.html">
+                        02 Requisição
+                    </a>
+                    <a href="alocacao.html">
+                        03 Alocação
+                    </a>
+                    <a href="rota.html">
+                        04 Rota
+                    </a>
+                    <a href="monitoramento.html" aria-current="page">
+                        05 Monitoramento
+                    </a>
+                </nav>
+                <div class="unit">
+                    <strong>
+                        Hemocentro
+                    </strong>
+                    <span>
+                        Central · simulação
+                    </span>
+                </div>
+            </aside>
+            <main id="conteudo" class="screen screen-5">
+                <header class="page-heading">
+                    <p>
+                        T05 / HU05
+                    </p>
+                    <h1>
+                        Monitoramento da remessa
+                    </h1>
+                    <span>
+                        Operador de distribuição
+                    </span>
+                </header>
+                <div class="page-content">
+                    <section class="panel ">
+                        <h2>
+                            R-008 · Em transporte · Caixa CX-01
+                        </h2>
+                        <p>
+                            Destino: Hospital Aurora | RV-014 | Bolsas B101 e B102
+                        </p>
+                    </section>
+                    <div class="stats">
+                        <section class="stat">
+                            <h2>
+                                ÚLTIMA TEMPERATURA
+                            </h2>
+                            <p>
+                                8,0 °C
+                            </p>
+                        </section>
+                        <section class="stat">
+                            <h2>
+                                FAIXA SIMULADA
+                            </h2>
+                            <p>
+                                2,0 a 6,0 °C
+                            </p>
+                        </section>
+                        <section class="stat">
+                            <h2>
+                                ÚLTIMA LEITURA
+                            </h2>
+                            <p>
+                                10:05
+                            </p>
+                        </section>
+                    </div>
+                    <section class="panel alert">
+                        <h2>
+                            ! Temperatura fora da faixa há 2 minutos
+                        </h2>
+                        <p class="alert-status">
+                            Desvio iniciado às 10:03 · Remessa Pendente de avaliação
+                        </p>
+                        <p>
+                            B101 e B102 afetadas · Reconhecer o alerta não libera as bolsas.
+                        </p>
+                    </section>
+                    <div class="table-wrap">
+                        <table>
+                            <caption class="sr-only">
+                                Leituras sintéticas de temperatura
+                            </caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        Horário
+                                    </th>
+                                    <th scope="col">
+                                        Temperatura
+                                    </th>
+                                    <th scope="col">
+                                        Conectividade
+                                    </th>
+                                    <th scope="col">
+                                        Condição
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        10:00
+                                    </td>
+                                    <td>
+                                        4,0 °C
+                                    </td>
+                                    <td>
+                                        Conectada
+                                    </td>
+                                    <td>
+                                        Dentro da faixa
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        10:03
+                                    </td>
+                                    <td>
+                                        7,0 °C
+                                    </td>
+                                    <td>
+                                        Conectada
+                                    </td>
+                                    <td>
+                                        Início do desvio
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        10:05
+                                    </td>
+                                    <td>
+                                        8,0 °C
+                                    </td>
+                                    <td>
+                                        Conectada
+                                    </td>
+                                    <td>
+                                        Alerta térmico
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="actions">
+                        <button class="button" type="button" disabled title="Ação ilustrativa, sem processamento">
+                            Reconhecer alerta
+                        </button>
+                        <span>
+                            Posição simulada: trecho Central–Aurora · atualização 10:05
+                        </span>
+                    </div>
+                </div>
+                <footer>
+                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>
