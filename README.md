@@ -197,6 +197,9 @@ Para deploy em nuvem (AWS, DigitalOcean, GCP), recomenda-se a utilização do ar
 Este documento mapeia os requisitos de negócio, fluxos lógicos e critérios de aceite aplicados ao desenvolvimento das funcionalidades do ecossistema **Rota Vital**.
 
 ---
+## 🚀 Entrega 01 - Definição e Prototipagem
+
+Nesta primeira etapa, definimos o escopo inicial do projeto por meio de histórias de usuário estruturadas com critérios de aceitação e criamos a representação visual inicial da interface.
 
 ### 🩸 T01 — HU01 — Estoque
 **Descrição:** Gestão biológica rigorosa de entrada, classificação e ciclo de vida de bolsas de sangue.
