@@ -21,6 +21,13 @@ public class EstoqueService {
     }
 
     public BolsaHemoComponente cadastrar(BolsaHemoComponente bolsa) {
+
+        if (repository.existsById(bolsa.getCodigo())) {
+            throw new IllegalArgumentException(
+                "Já existe uma bolsa cadastrada com o código " + bolsa.getCodigo()
+            );
+        }
+
         return repository.save(bolsa);
     }
 }
