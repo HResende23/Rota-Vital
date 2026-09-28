@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.rotavital.model.BolsaHemoComponente;
 import br.com.rotavital.service.EstoqueService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/bolsas")
@@ -30,7 +31,7 @@ public class EstoqueController {
 
     @PostMapping
     public ResponseEntity<BolsaHemoComponente> cadastrar(
-            @RequestBody BolsaHemoComponente bolsa) {
+            @Valid @RequestBody BolsaHemoComponente bolsa) {
 
         BolsaHemoComponente novaBolsa =
                 estoqueService.cadastrar(bolsa);
