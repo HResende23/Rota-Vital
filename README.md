@@ -79,8 +79,14 @@ Rota-Vital/
 ├── mvnw
 ├── mvnw.cmd
 └── README.md
-```
 
+```
+## Estatística e CRISP-DM
+
+A análise estatística do projeto Rota-Vital foi estruturada com base no ciclo CRISP-DM, abordando entendimento do problema, análise dos dados de estoque, preparação, modelagem estatística, avaliação e implantação.
+
+- [Apresentação em PDF](docs/entrega-02/Rota-Vital_Estatistica_CRISP-DM.pdf)
+- [Apresentação em PowerPoint](docs/entrega-02/Rota-Vital_Estatistica_CRISP-DM.pptx)
 ---
 
 ## 🔌 Endpoints implementados
