@@ -140,7 +140,7 @@ Controle de quarentena, resultados de exames, liberação e descarte.
 🔗 [Rota Vital — Entrega 01](https://www.figma.com/design/CZ4BYx3COy4SKGpxZ36Zu1/Rota-Vital-%E2%80%94-Entrega-01?node-id=0-1&p=f&t=bXHbJWjJVn23hN8B-0)
 
 ## Screencast do Figma
-🔗file:///C:/Users/hilto/Videos/Grava%C3%A7%C3%B5es%20de%20Tela/Grava%C3%A7%C3%A3o%20de%20Tela%202026-10-06%20184734.mp4
+🔗[file:///C:/Users/hilto/Videos/Grava%C3%A7%C3%B5es%20de%20Tela/Grava%C3%A7%C3%A3o%20de%20Tela%202026-10-06%20184734.mp4](https://youtu.be/3hvxZNpkrM4)
 ---
 
 ## ✅ Entrega 02 — Implementação inicial
