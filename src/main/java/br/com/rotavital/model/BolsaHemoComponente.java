@@ -50,6 +50,13 @@ public class BolsaHemoComponente {
         this.status = status;
     }
 
+    public void reservar() {
+        if (!estaDisponivel()) {
+            throw new IllegalStateException("Bolsa indisponível para reserva");
+        }
+        this.status = StatusBolsa.RESERVADA;
+    }
+
     public boolean estaVencida() {
         return validade.isBefore(LocalDate.now());
     }
