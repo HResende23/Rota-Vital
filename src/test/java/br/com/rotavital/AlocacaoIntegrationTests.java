@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -198,5 +200,93 @@ class AlocacaoIntegrationTests {
             service.confirmar(id, new ConfirmacaoReserva(List.of("B1")));
             return 200;
         } catch (ResponseStatusException erro) { return erro.getStatusCode().value(); }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "{\"hospital\":\" \"}",
+        "{\"hospital\":null}",
+        "{\"componente\":null}",
+        "{\"tipoSanguineo\":null}",
+        "{\"quantidade\":0}",
+        "{\"quantidade\":-1}",
+        "{\"quantidade\":1001}"
+    })
+    void rejeitaCadaCampoInvalidoDaRequisicaoSemPersistir(String alteracao) throws Exception {
+        // Sobrepõe um único campo de uma entrada válida, isolando cada restrição.
+        var campos = new java.util.LinkedHashMap<String, Object>();
+        campos.put("hospital", "Hospital Aurora");
+        campos.put("componente", "CONCENTRADO_HEMACIAS");
+        campos.put("tipoSanguineo", "A_POSITIVO");
+        campos.put("quantidade", 1);
+        var mapper = new tools.jackson.databind.ObjectMapper();
+        campos.putAll(mapper.readValue(alteracao,
+            new tools.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {}));
+        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(campos))).andExpect(status().isBadRequest());
+        assertEquals(0, requisicoes.count());
+    }
+
+    @Test
+    void aceitaLimitesDeHospitalEQuantidadeERejeitaHospitalExcedente() throws Exception {
+        String json = "{\"hospital\":\"%s\",\"componente\":\"PLASMA\","
+            + "\"tipoSanguineo\":\"O_NEGATIVO\",\"quantidade\":1000}";
+        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+            .content(json.formatted("H".repeat(200)))).andExpect(status().isCreated())
+            .andExpect(jsonPath("$.quantidade").value(1000));
+        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+            .content(json.formatted("H".repeat(201)))).andExpect(status().isBadRequest());
+        assertEquals(1, requisicoes.count());
+    }
+
+    @Test
+    void requisicaoInexistenteRetorna404EmTodosOsFluxos() throws Exception {
+        mvc.perform(get(url(Long.MAX_VALUE))).andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.erro").value("Requisição não encontrada"));
+        mvc.perform(post(url(Long.MAX_VALUE) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"codigosBolsas\":[\"B1\"]}"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void loteComBolsaDeOutroComponenteNaoReservaNenhuma() throws Exception {
+        Long id = requisicao(2);
+        bolsa("B1", 1);
+        bolsa("B2", PLASMA, A_POSITIVO, 1, DISPONIVEL);
+        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"codigosBolsas\":[\"B1\",\"B2\"]}"))
+            .andExpect(status().isConflict());
+        assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());
+        assertEquals(DISPONIVEL, bolsas.findById("B2").orElseThrow().getStatus());
+        assertTrue(service.consultar(id).codigosBolsas().isEmpty());
+    }
+
+    @Test
+    void loteComBolsaAusenteNaoReservaAsExistentes() throws Exception {
+        Long id = requisicao(2);
+        bolsa("B1", 1);
+        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+            .content("{\"codigosBolsas\":[\"B1\",\"AUSENTE\"]}"))
+            .andExpect(status().isNotFound());
+        assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());
+        assertEquals(StatusRequisicao.PENDENTE_ALOCACAO, service.consultar(id).status());
+    }
+
+    @Test
+    void confirmacoesConcorrentesDaMesmaRequisicaoSaoSerializadas() throws Exception {
+        Long id = requisicao(1);
+        bolsa("B1", 1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        CountDownLatch inicio = new CountDownLatch(1);
+        try {
+            Future<Integer> primeira = executor.submit(() -> tentarReserva(id, inicio));
+            Future<Integer> segunda = executor.submit(() -> tentarReserva(id, inicio));
+            inicio.countDown();
+            assertEquals(List.of(200, 409), List.of(primeira.get(10, TimeUnit.SECONDS),
+                segunda.get(10, TimeUnit.SECONDS)).stream().sorted().toList());
+            assertEquals(List.of("B1"), service.consultar(id).codigosBolsas());
+        } finally {
+            executor.shutdownNow();
+        }
     }
 }

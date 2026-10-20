@@ -1,14 +1,22 @@
 package br.com.rotavital.service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import br.com.rotavital.dto.*;
-import br.com.rotavital.model.*;
-import br.com.rotavital.repository.*;
+import br.com.rotavital.dto.ConfirmacaoReserva;
+import br.com.rotavital.dto.NovaRequisicao;
+import br.com.rotavital.dto.PropostaAlocacao;
+import br.com.rotavital.dto.RequisicaoResposta;
+import br.com.rotavital.model.BolsaHemoComponente;
+import br.com.rotavital.model.Requisicao;
+import br.com.rotavital.model.StatusBolsa;
+import br.com.rotavital.model.StatusRequisicao;
+import br.com.rotavital.repository.BolsaHemoComponenteRepository;
+import br.com.rotavital.repository.RequisicaoRepository;
 
 @Service
 public class AlocacaoService {
@@ -39,15 +47,19 @@ public class AlocacaoService {
     public PropostaAlocacao propor(Long id) {
         Requisicao requisicao = buscar(id);
         exigirPendente(requisicao);
-        List<BolsaHemoComponente> selecionadas = bolsas
+        List<BolsaHemoComponente> selecionadas = selecionarParaProposta(requisicao);
+        return new PropostaAlocacao(id, requisicao.getQuantidade(), selecionadas.size(),
+            requisicao.getQuantidade() - selecionadas.size(), selecionadas);
+    }
+
+    private List<BolsaHemoComponente> selecionarParaProposta(Requisicao requisicao) {
+        return bolsas
             .findByComponenteAndStatusAndValidadeGreaterThanEqualOrderByValidadeAscCodigoAsc(
                 requisicao.getComponente(), StatusBolsa.DISPONIVEL, LocalDate.now())
             .stream()
             .filter(b -> compativel(b, requisicao))
             .limit(requisicao.getQuantidade())
             .toList();
-        return new PropostaAlocacao(id, requisicao.getQuantidade(), selecionadas.size(),
-            requisicao.getQuantidade() - selecionadas.size(), selecionadas);
     }
 
     @Transactional
@@ -56,8 +68,18 @@ public class AlocacaoService {
         Requisicao requisicao = requisicoes.buscarParaReserva(id).orElseThrow(
             () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Requisição não encontrada"));
         exigirPendente(requisicao);
-        List<String> codigos = dados.codigosBolsas();
-        if (codigos.size() != requisicao.getQuantidade()
+        List<BolsaHemoComponente> selecionadas = buscarSelecaoParaReserva(
+            dados.codigosBolsas(), requisicao.getQuantidade());
+        exigirElegibilidade(selecionadas, requisicao);
+        selecionadas.forEach(BolsaHemoComponente::reservar);
+        requisicao.alocar(selecionadas);
+        // JPA persiste os objetos gerenciados ao concluir a mesma transação.
+        return RequisicaoResposta.de(requisicao);
+    }
+
+    private List<BolsaHemoComponente> buscarSelecaoParaReserva(List<String> codigos,
+                                                             int quantidadeSolicitada) {
+        if (codigos.size() != quantidadeSolicitada
                 || new HashSet<>(codigos).size() != codigos.size()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Informe bolsas distintas na quantidade solicitada");
@@ -66,6 +88,11 @@ public class AlocacaoService {
         if (selecionadas.size() != codigos.size()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bolsa não encontrada");
         }
+        return selecionadas;
+    }
+
+    private void exigirElegibilidade(List<BolsaHemoComponente> selecionadas,
+                                     Requisicao requisicao) {
         // Valida o lote inteiro antes de alterar qualquer estado.
         for (BolsaHemoComponente bolsa : selecionadas) {
             if (!bolsa.estaDisponivel() || !compativel(bolsa, requisicao)) {
@@ -73,10 +100,6 @@ public class AlocacaoService {
                     "A bolsa " + bolsa.getCodigo() + " não está mais elegível; consulte nova proposta");
             }
         }
-        selecionadas.forEach(BolsaHemoComponente::reservar);
-        requisicao.alocar(selecionadas);
-        // JPA persiste os objetos gerenciados ao concluir a mesma transação.
-        return RequisicaoResposta.de(requisicao);
     }
 
     private boolean compativel(BolsaHemoComponente bolsa, Requisicao requisicao) {
