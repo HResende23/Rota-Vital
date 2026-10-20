@@ -6,22 +6,6 @@ O projeto busca reduzir desperdícios por vencimento, melhorar a visualização 
 
 ---
 
-## 🚀 Funcionalidades planejadas
-
-O escopo do projeto é dividido em sete histórias principais:
-
-- **T01 — Estoque:** cadastro, consulta e controle de bolsas de hemocomponentes.
-- **T02 — Requisição:** registro e acompanhamento de solicitações hospitalares.
-- **T03 — Alocação:** regras de compatibilidade e reserva de bolsas.
-- **T04 — Rota:** apoio à roteirização das entregas.
-- **T05 — Monitoramento:** acompanhamento de temperatura durante o transporte.
-- **T06 — Fracionamento:** rastreabilidade dos hemocomponentes derivados do sangue total.
-- **T07 — Triagem:** quarentena, validação sorológica e liberação ou descarte de bolsas.
-
-> As funcionalidades são implementadas progressivamente conforme as entregas da disciplina.
-
----
-
 ## 🛠️ Tecnologias utilizadas
 
 ### Backend
@@ -89,52 +73,7 @@ A análise estatística do projeto Rota-Vital foi estruturada com base no ciclo 
 - [Apresentação em PowerPoint](docs/entrega-02/Rota-Vital_Estatistica_CRISP-DM.pptx)
 ---
 
-## 🔌 Endpoints implementados
 
-### Bolsas de hemocomponentes
-
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/api/v1/bolsas` | Lista as bolsas cadastradas no estoque |
-| `POST` | `/api/v1/bolsas` | Cadastra uma nova bolsa de hemocomponente |
-
-### Regras já implementadas
-
-- Persistência de bolsas no PostgreSQL.
-- Dados permanecem salvos após reiniciar a aplicação.
-- Validação de campos obrigatórios.
-- Validação da data de validade.
-- Bloqueio de cadastro com código de bolsa duplicado.
-- Padronização REST com prefixo `/api/v1`.
-
----
-
-# 📦 Entregas
-
-## 🚀 Entrega 01 — Definição e Prototipagem
-
-Nesta etapa foi definido o escopo inicial do Rota Vital por meio das histórias de usuário e da prototipagem das principais telas do sistema.
-
-### 🩸 T01 — Estoque
-Gestão da entrada, classificação, validade e disponibilidade de bolsas de hemocomponentes.
-
-### 📥 T02 — Requisição
-Registro e priorização de demandas hospitalares.
-
-### 🧠 T03 — Alocação
-Aplicação de regras de compatibilidade e reserva de hemocomponentes.
-
-### 🗺️ T04 — Rota
-Planejamento de deslocamento entre hemocentro e hospitais.
-
-### ❄️ T05 — Monitoramento
-Acompanhamento das condições de temperatura durante o transporte.
-
-### 🎒 T06 — Fracionamento
-Controle dos derivados obtidos a partir de uma bolsa de sangue total.
-
-### 🏷️ T07 — Triagem e Validação Sorológica
-Controle de quarentena, resultados de exames, liberação e descarte.
 
 ### 🎨 Protótipo no Figma
 🔗 [Rota Vital — Entrega 01](https://www.figma.com/design/CZ4BYx3COy4SKGpxZ36Zu1/Rota-Vital-%E2%80%94-Entrega-01?node-id=0-1&p=f&t=bXHbJWjJVn23hN8B-0)
@@ -143,55 +82,7 @@ Controle de quarentena, resultados de exames, liberação e descarte.
 🔗[file:///C:/Users/hilto/Videos/Grava%C3%A7%C3%B5es%20de%20Tela/Grava%C3%A7%C3%A3o%20de%20Tela%202026-10-06%20184734.mp4](https://youtu.be/3hvxZNpkrM4)
 ---
 
-## ✅ Entrega 02 — Implementação inicial
 
-Nesta entrega foram implementadas as duas primeiras funcionalidades do módulo de estoque, além da persistência em banco de dados e do uso do Issue/Bug Tracker do GitHub.
-
-### 🟨 História implementada 01 — Consultar estoque
-
-> **Como** responsável pelo estoque  
-> **Quero** visualizar as bolsas de hemocomponentes cadastradas  
-> **Para** acompanhar a disponibilidade do estoque.
-
-**Valor entregue:** o sistema consulta as bolsas persistidas no banco por meio do endpoint:
-
-```http
-GET /api/v1/bolsas
-```
-
-**Critérios atendidos:**
-- listagem das bolsas cadastradas;
-- exibição do código;
-- tipo sanguíneo;
-- tipo de hemocomponente;
-- validade;
-- status;
-- consulta persistente mesmo após reiniciar a aplicação.
-
----
-
-### 🟨 História implementada 02 — Cadastrar bolsa de hemocomponente
-
-> **Como** responsável pelo estoque  
-> **Quero** cadastrar uma nova bolsa de hemocomponente  
-> **Para** manter o estoque do sistema atualizado.
-
-**Valor entregue:** o sistema permite cadastrar bolsas e armazená-las no PostgreSQL por meio do endpoint:
-
-```http
-POST /api/v1/bolsas
-```
-
-**Critérios atendidos:**
-- cadastro de uma nova bolsa;
-- persistência em PostgreSQL;
-- validação de campos obrigatórios;
-- validação da data de validade;
-- bloqueio de código duplicado;
-- retorno de erro HTTP `400` em cadastros inválidos;
-- retorno HTTP `201 Created` em cadastros válidos.
-
----
 
 ## 🐛 Issue / Bug Tracker
 
