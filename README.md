@@ -313,3 +313,8 @@ POST /api/v1/bolsas
 ## 📌 Observação
 
 O Rota Vital está em desenvolvimento incremental. As demais histórias previstas no escopo serão implementadas nas próximas entregas.
+## Vídeo de apresentação do Rota Vital
+
+Assista à demonstração do projeto pelo link abaixo:
+
+[Assistir ao vídeo](https://drive.google.com/file/d/1nVxMmE_J_bPVI7s0wxBI1vTj-OuuL3cz/view?usp=sharing)
