@@ -65,6 +65,87 @@ Rota-Vital/
 └── README.md
 
 ```
+## Executar com Docker
+
+Pré-requisitos: Git e Docker com o plugin Compose. No Windows, instale e abra
+o Docker Desktop antes de executar os comandos. Não é necessário instalar Java,
+Maven ou PostgreSQL na máquina para usar este modo.
+
+```bash
+git clone https://github.com/HResende23/Rota-Vital.git
+cd Rota-Vital
+docker compose up --build
+```
+
+Se já possui o projeto, execute apenas o último comando na pasta que contém
+`Dockerfile`, `compose.yaml` e `pom.xml`. A primeira execução baixa as imagens e
+as dependências, podendo levar alguns minutos. Libere a porta 8080 caso outra
+instância da aplicação esteja utilizando-a.
+
+O Dockerfile compila o projeto e executa `mvn -B -ntp clean verify` antes de gerar
+a imagem da aplicação. Uma falha nos testes interrompe o build. Se as entradas
+do build não mudarem, o Docker pode reutilizar essa etapa do cache.
+
+O Compose inicia dois serviços: `db` (PostgreSQL 17) e `app` (Spring Boot com
+Java 17). A aplicação aguarda o banco ficar saudável e conecta-se a
+`jdbc:postgresql://db:5432/rotavital`. O banco do container é independente de um
+PostgreSQL instalado na máquina e não publica sua porta 5432 no host.
+
+Quando aparecer `Started RotaVitalApplication`, acesse
+[http://localhost:8080](http://localhost:8080). Mantenha o terminal aberto;
+`Ctrl + C` encerra a execução em primeiro plano.
+
+### Comandos úteis
+
+Execute na pasta do projeto. Se o terminal estiver acompanhando os logs, abra
+outro terminal nessa mesma pasta.
+
+```bash
+# Iniciar em segundo plano, liberando o terminal
+docker compose up --build -d
+
+# Consultar os containers e suas situações
+docker compose ps
+
+# Ver as últimas mensagens da aplicação
+docker compose logs --tail=50 app
+
+# Encerrar e remover os containers e a rede do projeto
+docker compose down
+```
+
+Os dados do PostgreSQL ficam no volume `postgres_data` e são preservados por
+`docker compose down`. O comando `docker compose down -v` também apaga o volume
+e seus dados; use-o somente quando quiser limpar o banco deste ambiente.
+
+As credenciais `postgres` / `rotavital_local` presentes no Compose são destinadas
+ao desenvolvimento local. A conexão definida no Compose substitui a configuração
+local de banco da aplicação.
+
+### Testes automatizados
+
+Com Java compatível instalado, execute a suíte completa sem iniciar os containers:
+
+```powershell
+# Windows PowerShell
+.\mvnw.cmd clean verify
+```
+
+```bash
+# Git Bash, Linux ou macOS
+sh mvnw clean verify
+```
+
+Os testes usam H2 em modo PostgreSQL e não alteram o banco da aplicação.
+A suíte desta entrega contém 249 testes. Consulte
+[a documentação da refatoração e dos testes](docs/backend-tdd.md) para detalhes.
+
+### Versão da entrega
+
+A tag [ENTREGA-SO](https://github.com/HResende23/Rota-Vital/tree/ENTREGA-SO)
+identifica a versão que reúne os testes e a refatoração do backend, a
+conteinerização com Docker e Compose e estas instruções de execução.
+
 ## Estatística e CRISP-DM
 
 A análise estatística do projeto Rota-Vital foi estruturada com base no ciclo CRISP-DM, abordando entendimento do problema, análise dos dados de estoque, preparação, modelagem estatística, avaliação e implantação.
