@@ -17,16 +17,19 @@ import br.com.rotavital.model.StatusBolsa;
 import br.com.rotavital.model.StatusRequisicao;
 import br.com.rotavital.repository.BolsaHemoComponenteRepository;
 import br.com.rotavital.repository.RequisicaoRepository;
+import br.com.rotavital.repository.UserRepository;
 
 @Service
 public class AlocacaoService {
+    private final UserRepository users;
     private final RequisicaoRepository requisicoes;
     private final BolsaHemoComponenteRepository bolsas;
     private final CompatibilidadeService compatibilidade;
 
     public AlocacaoService(RequisicaoRepository requisicoes,
                            BolsaHemoComponenteRepository bolsas,
-                           CompatibilidadeService compatibilidade) {
+                           CompatibilidadeService compatibilidade, UserRepository users) {
+        this.users = users;
         this.requisicoes = requisicoes;
         this.bolsas = bolsas;
         this.compatibilidade = compatibilidade;
@@ -34,7 +37,9 @@ public class AlocacaoService {
 
     @Transactional
     public RequisicaoResposta cadastrar(NovaRequisicao dados) {
-        return RequisicaoResposta.de(requisicoes.save(new Requisicao(dados.hospital(),
+        var usuario = users.findById(dados.usuarioId()).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+        return RequisicaoResposta.de(requisicoes.save(new Requisicao(usuario, dados.hospital(),
             dados.componente(), dados.tipoSanguineo(), dados.quantidade())));
     }
 

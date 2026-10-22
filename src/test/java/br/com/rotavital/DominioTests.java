@@ -47,7 +47,7 @@ class DominioTests {
 
     @Test
     void alocacaoPreservaVinculosEImpedeNovaAlocacao() {
-        var requisicao = new Requisicao("Hospital", CONCENTRADO_HEMACIAS, A_POSITIVO, 1);
+        var requisicao = new Requisicao(new User("Ana", "ana@example.com"), "Hospital", CONCENTRADO_HEMACIAS, A_POSITIVO, 1);
         var bolsa = bolsa("B1", 1, StatusBolsa.RESERVADA);
         requisicao.alocar(List.of(bolsa));
         assertEquals(StatusRequisicao.ALOCADA, requisicao.getStatus());
@@ -58,7 +58,7 @@ class DominioTests {
 
     @Test
     void rejeitaQuantidadeInsuficienteSemAlterarRequisicao() {
-        var requisicao = new Requisicao("Hospital", CONCENTRADO_HEMACIAS, A_POSITIVO, 2);
+        var requisicao = new Requisicao(new User("Ana", "ana@example.com"), "Hospital", CONCENTRADO_HEMACIAS, A_POSITIVO, 2);
         assertThrows(IllegalStateException.class,
             () -> requisicao.alocar(List.of(bolsa("B1", 1, StatusBolsa.RESERVADA))));
         assertEquals(StatusRequisicao.PENDENTE_ALOCACAO, requisicao.getStatus());

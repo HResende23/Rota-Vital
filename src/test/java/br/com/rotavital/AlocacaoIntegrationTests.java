@@ -32,15 +32,19 @@ class AlocacaoIntegrationTests {
     @Autowired BolsaHemoComponenteRepository bolsas;
     @Autowired RequisicaoRepository requisicoes;
     @Autowired JdbcTemplate jdbc;
+    @Autowired UserRepository users;
+    private Long usuarioId;
 
     @BeforeEach
     void limpar() {
         requisicoes.deleteAll();
         bolsas.deleteAll();
+        users.deleteAll();
+        usuarioId = users.saveAndFlush(new User("Solicitante", "solicitante@example.com")).getId();
     }
 
     private Long requisicao(int quantidade) {
-        return service.cadastrar(new NovaRequisicao("Hospital Aurora", CONCENTRADO_HEMACIAS,
+        return service.cadastrar(new NovaRequisicao(usuarioId, "Hospital Aurora", CONCENTRADO_HEMACIAS,
             A_POSITIVO, quantidade)).id();
     }
 
@@ -172,7 +176,7 @@ class AlocacaoIntegrationTests {
     @Test
     void criaRequisicaoPelaApiComLocation() throws Exception {
         mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
-            .content("{\"hospital\":\"Aurora\",\"componente\":\"CONCENTRADO_HEMACIAS\","
+            .content("{\"usuarioId\":" + usuarioId + ",\"hospital\":\"Aurora\",\"componente\":\"CONCENTRADO_HEMACIAS\","
                 + "\"tipoSanguineo\":\"A_POSITIVO\",\"quantidade\":2}"))
             .andExpect(status().isCreated()).andExpect(header().exists("Location"))
             .andExpect(jsonPath("$.status").value("PENDENTE_ALOCACAO"));
@@ -215,6 +219,7 @@ class AlocacaoIntegrationTests {
     void rejeitaCadaCampoInvalidoDaRequisicaoSemPersistir(String alteracao) throws Exception {
         // Sobrepõe um único campo de uma entrada válida, isolando cada restrição.
         var campos = new java.util.LinkedHashMap<String, Object>();
+        campos.put("usuarioId", usuarioId);
         campos.put("hospital", "Hospital Aurora");
         campos.put("componente", "CONCENTRADO_HEMACIAS");
         campos.put("tipoSanguineo", "A_POSITIVO");
@@ -229,7 +234,7 @@ class AlocacaoIntegrationTests {
 
     @Test
     void aceitaLimitesDeHospitalEQuantidadeERejeitaHospitalExcedente() throws Exception {
-        String json = "{\"hospital\":\"%s\",\"componente\":\"PLASMA\","
+        String json = "{\"usuarioId\":" + usuarioId + ",\"hospital\":\"%s\",\"componente\":\"PLASMA\","
             + "\"tipoSanguineo\":\"O_NEGATIVO\",\"quantidade\":1000}";
         mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
             .content(json.formatted("H".repeat(200)))).andExpect(status().isCreated())

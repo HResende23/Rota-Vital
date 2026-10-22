@@ -29,9 +29,22 @@ public class Requisicao {
         uniqueConstraints = @UniqueConstraint(columnNames = "bolsa_codigo"))
     private List<BolsaHemoComponente> bolsas = new ArrayList<>();
 
+    // Nullable para preservar requisições anteriores ao cadastro de usuários.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
+
     protected Requisicao() {}
 
-    public Requisicao(String hospital, TipoComponente componente,
+    public Requisicao(User usuario, String hospital, TipoComponente componente,
+                      TipoSanguineo tipoSanguineo, int quantidade) {
+        this(hospital, componente, tipoSanguineo, quantidade);
+        this.usuario = java.util.Objects.requireNonNull(usuario, "Usuário obrigatório");
+    }
+
+    public User getUsuario() { return usuario; }
+
+    private Requisicao(String hospital, TipoComponente componente,
                       TipoSanguineo tipoSanguineo, int quantidade) {
         this.hospital = hospital;
         this.componente = componente;

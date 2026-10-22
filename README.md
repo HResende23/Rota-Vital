@@ -192,3 +192,43 @@ https://drive.google.com/file/d/1nVxMmE_J_bPVI7s0wxBI1vTj-OuuL3cz/view?usp=shari
 | Dayanne Cristina Moraes Inacio |
 | Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos |
 
+
+### Usuários e vínculo com requisições
+
+Cadastre um solicitante em `POST /api/v1/usuarios`:
+
+```json
+{"nome":"Ana Silva","email":"ana@example.com"}
+```
+
+A resposta retorna `201`, o ID e o cabeçalho `Location`. Consulte o cadastro com
+`GET /api/v1/usuarios/{id}`. O e-mail é normalizado para minúsculas e deve ser único
+(duplicatas retornam `409`); dados inválidos retornam `400`.
+
+Novas requisições exigem um usuário existente:
+
+```json
+{
+  "usuarioId": 1,
+  "hospital": "Hospital Aurora",
+  "componente": "CONCENTRADO_HEMACIAS",
+  "tipoSanguineo": "A_POSITIVO",
+  "quantidade": 2
+}
+```
+
+Envie para `POST /api/v1/requisicoes`. Omitir `usuarioId`, enviar nulo ou um valor
+não positivo retorna `400`; usuário inexistente retorna `404`. A resposta de
+cadastro, consulta e reserva inclui `usuarioId`.
+
+A entidade `User` é persistida na tabela `usuarios`; `requisicao.usuario_id`
+é uma chave estrangeira com relação muitos-para-um. A coluna aceita nulo somente
+para preservar registros antigos; o fluxo de cadastro exige vínculo em toda nova
+requisição. Não há exclusão em cascata de usuário nem cadastro implícito durante
+a criação de requisição. Com o atual `ddl-auto=update`, o Hibernate cria a tabela
+e adiciona a coluna ao iniciar a aplicação; faça backup antes de atualizar uma
+base com dados importantes.
+
+Este cadastro identifica o solicitante, mas ainda não implementa autenticação:
+o ID informado não comprova identidade. Login, senha e autorização precisam de
+uma etapa própria antes de disponibilizar dados reais.
