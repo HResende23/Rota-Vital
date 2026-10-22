@@ -14,6 +14,17 @@ public class User {
     @Column(nullable = false, unique = true, length = 254)
     private String email;
 
+    // Nullable para preservar cadastros anteriores, que não podem autenticar sem senha.
+    @Column(length = 100)
+    private String senhaHash;
+
+    public String getSenhaHash() { return senhaHash; }
+
+    public User(String nome, String email, String senhaHash) {
+        this(nome, email);
+        this.senhaHash = java.util.Objects.requireNonNull(senhaHash);
+    }
+
     protected User() {}
 
     public User(String nome, String email) {

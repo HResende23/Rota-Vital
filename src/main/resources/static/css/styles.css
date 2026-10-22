@@ -92,7 +92,13 @@ footer { font-size: 11px; color: #666; margin-top: 22px; }
 .auth-feedback { margin: 0; padding: 12px; border: 1px solid var(--line); background: var(--muted); font-size: 14px; }
 .auth-footer { width: 100%; max-width: 796px; margin: 0 auto; padding: 0 0 15px; }
 .auth-register .auth-main { padding-top: 40px; }
-@media (max-width: 680px) {
-    .auth-main, .auth-register .auth-main { padding: 32px 16px; }
-    .auth-footer { padding: 0 16px 16px; }
-}
+
+
+/* Integração MVC: controles e ações compartilhadas. */
+select { display: block; width: 100%; height: 45px; margin-top: 9px; padding: 10px 12px; border: 1px solid var(--line); background: #fafafa; color: var(--ink); font: 14px Arial, sans-serif; }
+.account-actions { display: flex; align-items: center; gap: 20px; }
+.topbar .account-actions span { margin: 0; }
+.account-actions form { margin: 0; }
+.button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.bolsa-checkbox { width: 18px; height: 18px; margin: 0; }

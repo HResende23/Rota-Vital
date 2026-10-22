@@ -13,8 +13,30 @@ import br.com.rotavital.repository.UserRepository;
 @Service
 public class UserService {
     private final UserRepository users;
+    private final org.springframework.security.crypto.password.PasswordEncoder encoder;
 
-    public UserService(UserRepository users) { this.users = users; }
+    public UserService(UserRepository users, org.springframework.security.crypto.password.PasswordEncoder encoder) {
+        this.users = users;
+        this.encoder = encoder;
+    }
+
+    @Transactional
+    public UserResposta registrar(RegistroForm dados) {
+        String email = dados.email().strip().toLowerCase(Locale.ROOT);
+        if (users.existsByEmail(email)) throw emailDuplicado();
+        try {
+            return UserResposta.de(users.saveAndFlush(
+                new User(dados.nome(), email, encoder.encode(dados.senha()))));
+        } catch (DataIntegrityViolationException erro) {
+            throw emailDuplicado();
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public UserResposta atual(String email) {
+        return UserResposta.de(users.findByEmail(email).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado")));
+    }
 
     @Transactional
     public UserResposta cadastrar(NovoUser dados) {

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Rota Vital: estoque disponível — protótipo acadêmico de baixa fidelidade.">
+        <title>
+            Estoque | Rota Vital
+        </title>
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
+    </head>
+    <body>
+        <a class="skip-link" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="layout">
+            <aside th:replace="~{fragments/layout :: sidebar('index')}"></aside>
+            <main id="conteudo" class="screen screen-1">
+                <header class="page-heading">
+                    <p>
+                        T01 / HU01
+                    </p>
+                    <h1>
+                        Estoque disponível
+                    </h1>
+                    <span>
+                        Consulta de estoque
+                    </span>
+                </header>
+                <div class="page-content">
+<p class="auth-feedback" role="status" th:if="${sucesso}" th:text="${sucesso}"></p>
+<p class="auth-feedback" role="alert" th:if="${erro}" th:text="${erro}"></p>
+
+<div class="stats">
+    <section class="stat"><h2>DISPONÍVEIS</h2><p th:text="${disponiveis}">0</p></section>
+    <section class="stat"><h2>RESERVADAS</h2><p th:text="${reservadas}">0</p></section>
+    <section class="stat"><h2>BLOQUEADAS / VENCIDAS</h2><p th:text="${bloqueadas}">0</p></section>
+</div>
+<form class="fields filters" method="get" th:action="@{/estoque}">
+    <label>Componente<select name="componente"><option value="">Todos</option><option th:each="c : ${componentes}" th:value="${c}" th:text="${c.rotulo}" th:selected="${c == filtroComponente}"></option></select></label>
+    <label>Tipo sanguíneo<select name="tipo"><option value="">Todos</option><option th:each="t : ${tipos}" th:value="${t}" th:text="${t.rotulo}" th:selected="${t == filtroTipo}"></option></select></label>
+    <button class="button" type="submit">Consultar saldo</button><a th:href="@{/estoque}">Limpar filtros</a>
+</form>
+<h2 class="section-title">Estoque · ordem de vencimento (FEFO)</h2>
+<div class="table-wrap"><table><thead><tr><th>Bolsa</th><th>Componente</th><th>Tipo</th><th>Vencimento</th><th>Situação</th></tr></thead>
+<tbody><tr th:each="b : ${bolsas}"><td th:text="${b.codigo}"></td><td th:text="${b.componente.rotulo}"></td><td th:text="${b.tipoSanguineo.rotulo}"></td><td th:text="${b.validade}"></td><td th:text="${b.estaVencida() ? 'Vencida' : b.status.rotulo}"></td></tr>
+<tr th:if="${#lists.isEmpty(bolsas)}"><td colspan="5">Nenhuma bolsa encontrada.</td></tr></tbody></table></div>
+<div class="actions"><a class="button" th:href="@{/requisicao}">Nova requisição</a></div>
+<details class="panel">
+<summary>Cadastrar bolsa no estoque</summary>
+<form method="post" th:action="@{/bolsas}">
+<div class="fields two">
+<label>Código<input name="codigo" maxlength="100" required></label>
+<label>Componente<select name="componente" required><option value="">Selecione</option><option th:each="c : ${componentes}" th:value="${c}" th:text="${c.rotulo}"></option></select></label>
+<label>Tipo sanguíneo<select name="tipoSanguineo" required><option value="">Selecione</option><option th:each="t : ${tipos}" th:value="${t}" th:text="${t.rotulo}"></option></select></label>
+<label>Validade<input type="date" name="validade" required></label>
+</div><button class="button" type="submit">Cadastrar bolsa</button>
+</form></details>
+
+</div>
+                <footer>
+                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>

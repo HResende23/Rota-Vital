@@ -44,6 +44,12 @@ public class AlocacaoService {
     }
 
     @Transactional(readOnly = true)
+    public List<RequisicaoResposta> listarDoUsuario(Long usuarioId) {
+        return requisicoes.findByUsuarioIdOrderByIdDesc(usuarioId).stream()
+            .map(RequisicaoResposta::de).toList();
+    }
+
+    @Transactional(readOnly = true)
     public RequisicaoResposta consultar(Long id) {
         return RequisicaoResposta.de(buscar(id));
     }

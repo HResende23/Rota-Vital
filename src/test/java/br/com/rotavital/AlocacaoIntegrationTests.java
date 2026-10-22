@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@org.springframework.security.test.context.support.WithMockUser(username = "solicitante@example.com")
 @AutoConfigureMockMvc
 class AlocacaoIntegrationTests {
     @Autowired MockMvc mvc;
@@ -104,13 +105,13 @@ class AlocacaoIntegrationTests {
     void confirmaEPersisteVinculoEStatus() throws Exception {
         Long id = requisicao(2);
         bolsa("B101", 1); bolsa("B102", 2);
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B101\",\"B102\"]}"))
             .andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ALOCADA"));
         assertEquals(RESERVADA, bolsas.findById("B101").orElseThrow().getStatus());
         mvc.perform(get(url(id))).andExpect(jsonPath("$.codigosBolsas.length()").value(2));
         mvc.perform(get(url(id) + "/proposta-alocacao")).andExpect(status().isConflict());
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B101\",\"B102\"]}"))
             .andExpect(status().isConflict());
     }
@@ -121,7 +122,7 @@ class AlocacaoIntegrationTests {
         bolsa("B1", 1); bolsa("B2", 2);
         assertEquals(2, service.propor(primeira).selecionadas());
         service.confirmar(segunda, new ConfirmacaoReserva(List.of("B2")));
-        mvc.perform(post(url(primeira) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(primeira) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\",\"B2\"]}"))
             .andExpect(status().isConflict());
         assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());
@@ -135,10 +136,10 @@ class AlocacaoIntegrationTests {
                 "{\"codigosBolsas\":[\"B1\"]}",
                 "{\"codigosBolsas\":[\"B1\",\"B1\"]}",
                 "{\"codigosBolsas\":[\"B1\",\" \"]}")) {
-            mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+            mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
                 .content(json)).andExpect(status().isBadRequest());
         }
-        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/requisicoes").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"hospital\":\" \" ,\"quantidade\":0}"))
             .andExpect(status().isBadRequest());
     }
@@ -147,7 +148,7 @@ class AlocacaoIntegrationTests {
     void retorna404ParaRequisicaoOuBolsaInexistente() throws Exception {
         mvc.perform(get(url(99999L) + "/proposta-alocacao")).andExpect(status().isNotFound());
         Long id = requisicao(1);
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"AUSENTE\"]}"))
             .andExpect(status().isNotFound());
     }
@@ -156,7 +157,7 @@ class AlocacaoIntegrationTests {
     void rejeitaBolsaIncompativelNaConfirmacao() throws Exception {
         Long id = requisicao(1);
         bolsa("B1", CONCENTRADO_HEMACIAS, B_POSITIVO, 1, DISPONIVEL);
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\"]}"))
             .andExpect(status().isConflict());
         assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());
@@ -168,14 +169,14 @@ class AlocacaoIntegrationTests {
         assertEquals(1, service.propor(id).selecionadas());
         jdbc.update("update bolsa_hemo_componente set validade = ? where codigo = ?",
             LocalDate.now().minusDays(1), "B1");
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\"]}"))
             .andExpect(status().isConflict());
     }
 
     @Test
     void criaRequisicaoPelaApiComLocation() throws Exception {
-        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/requisicoes").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"usuarioId\":" + usuarioId + ",\"hospital\":\"Aurora\",\"componente\":\"CONCENTRADO_HEMACIAS\","
                 + "\"tipoSanguineo\":\"A_POSITIVO\",\"quantidade\":2}"))
             .andExpect(status().isCreated()).andExpect(header().exists("Location"))
@@ -227,7 +228,7 @@ class AlocacaoIntegrationTests {
         var mapper = new tools.jackson.databind.ObjectMapper();
         campos.putAll(mapper.readValue(alteracao,
             new tools.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {}));
-        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/requisicoes").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(campos))).andExpect(status().isBadRequest());
         assertEquals(0, requisicoes.count());
     }
@@ -236,10 +237,10 @@ class AlocacaoIntegrationTests {
     void aceitaLimitesDeHospitalEQuantidadeERejeitaHospitalExcedente() throws Exception {
         String json = "{\"usuarioId\":" + usuarioId + ",\"hospital\":\"%s\",\"componente\":\"PLASMA\","
             + "\"tipoSanguineo\":\"O_NEGATIVO\",\"quantidade\":1000}";
-        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/requisicoes").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(json.formatted("H".repeat(200)))).andExpect(status().isCreated())
             .andExpect(jsonPath("$.quantidade").value(1000));
-        mvc.perform(post("/api/v1/requisicoes").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/requisicoes").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(json.formatted("H".repeat(201)))).andExpect(status().isBadRequest());
         assertEquals(1, requisicoes.count());
     }
@@ -248,7 +249,7 @@ class AlocacaoIntegrationTests {
     void requisicaoInexistenteRetorna404EmTodosOsFluxos() throws Exception {
         mvc.perform(get(url(Long.MAX_VALUE))).andExpect(status().isNotFound())
             .andExpect(jsonPath("$.erro").value("Requisição não encontrada"));
-        mvc.perform(post(url(Long.MAX_VALUE) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(Long.MAX_VALUE) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\"]}"))
             .andExpect(status().isNotFound());
     }
@@ -258,7 +259,7 @@ class AlocacaoIntegrationTests {
         Long id = requisicao(2);
         bolsa("B1", 1);
         bolsa("B2", PLASMA, A_POSITIVO, 1, DISPONIVEL);
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\",\"B2\"]}"))
             .andExpect(status().isConflict());
         assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());
@@ -270,7 +271,7 @@ class AlocacaoIntegrationTests {
     void loteComBolsaAusenteNaoReservaAsExistentes() throws Exception {
         Long id = requisicao(2);
         bolsa("B1", 1);
-        mvc.perform(post(url(id) + "/reserva").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post(url(id) + "/reserva").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"codigosBolsas\":[\"B1\",\"AUSENTE\"]}"))
             .andExpect(status().isNotFound());
         assertEquals(DISPONIVEL, bolsas.findById("B1").orElseThrow().getStatus());

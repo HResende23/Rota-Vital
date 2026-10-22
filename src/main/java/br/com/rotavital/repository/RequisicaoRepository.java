@@ -7,6 +7,8 @@ import jakarta.persistence.LockModeType;
 import br.com.rotavital.model.Requisicao;
 
 public interface RequisicaoRepository extends JpaRepository<Requisicao, Long> {
+    java.util.List<Requisicao> findByUsuarioIdOrderByIdDesc(Long usuarioId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Requisicao r where r.id = :id")
     Optional<Requisicao> buscarParaReserva(@Param("id") Long id);

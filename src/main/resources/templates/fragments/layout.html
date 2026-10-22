@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="topbar" th:fragment="topbar">
+    <strong>ROTA VITAL</strong>
+    <div class="account-actions" th:if="${autenticado}">
+        <span th:text="${nomeUsuario}">Usuário</span>
+        <form method="post" th:action="@{/logout}"><button class="button" type="submit">Sair</button></form>
+    </div>
+    <div class="account-actions" th:unless="${autenticado}">
+        <a th:href="@{/login}">Entrar</a><a th:href="@{/registro}">Criar conta</a>
+    </div>
+</header>
+<aside class="sidebar" th:fragment="sidebar(ativa)">
+    <h2>DISTRIBUIÇÃO</h2>
+    <nav aria-label="Telas do sistema">
+        <a th:href="@{/estoque}" th:attr="aria-current=${ativa == 'index' ? 'page' : null}">01 Estoque</a>
+        <a th:href="@{/requisicao}" th:attr="aria-current=${ativa == 'requisicao' ? 'page' : null}">02 Requisição</a>
+        <a th:href="@{/alocacao}" th:attr="aria-current=${ativa == 'alocacao' ? 'page' : null}">03 Alocação</a>
+        <a th:href="@{/rota}" th:attr="aria-current=${ativa == 'rota' ? 'page' : null}">04 Rota</a>
+        <a th:href="@{/monitoramento}" th:attr="aria-current=${ativa == 'monitoramento' ? 'page' : null}">05 Monitoramento</a>
+    </nav>
+    <div class="unit"><strong th:text="${usuario.nome}">Usuário</strong><span>Conectado ao Rota Vital</span></div>
+</aside>
+</body>
+</html>

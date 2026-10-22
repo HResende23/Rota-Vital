@@ -14,23 +14,38 @@ import br.com.rotavital.service.AlocacaoService;
 public class AlocacaoController {
     private final AlocacaoService service;
 
-    public AlocacaoController(AlocacaoService service) { this.service = service; }
+    private final UsuarioDaSessao sessao;
+    public AlocacaoController(AlocacaoService service, UsuarioDaSessao sessao) {
+        this.service = service; this.sessao = sessao;
+    }
 
     @PostMapping
-    public ResponseEntity<RequisicaoResposta> cadastrar(@Valid @RequestBody NovaRequisicao dados) {
+    public ResponseEntity<RequisicaoResposta> cadastrar(@Valid @RequestBody NovaRequisicao dados, java.security.Principal principal) {
+        if (!sessao.id(principal).equals(dados.usuarioId())) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,
+                "O solicitante deve ser o usuário autenticado");
+        }
         RequisicaoResposta resposta = service.cadastrar(dados);
         return ResponseEntity.created(URI.create("/api/v1/requisicoes/" + resposta.id())).body(resposta);
     }
 
     @GetMapping("/{id}")
-    public RequisicaoResposta consultar(@PathVariable Long id) { return service.consultar(id); }
+    public RequisicaoResposta consultar(@PathVariable Long id, java.security.Principal principal) {
+        var resposta = service.consultar(id);
+        sessao.exigirDono(resposta, principal);
+        return resposta;
+    }
 
     @GetMapping("/{id}/proposta-alocacao")
-    public PropostaAlocacao propor(@PathVariable Long id) { return service.propor(id); }
+    public PropostaAlocacao propor(@PathVariable Long id, java.security.Principal principal) {
+        sessao.exigirDono(service.consultar(id), principal);
+        return service.propor(id);
+    }
 
     @PostMapping("/{id}/reserva")
     public RequisicaoResposta confirmar(@PathVariable Long id,
-                                        @Valid @RequestBody ConfirmacaoReserva dados) {
+                                        @Valid @RequestBody ConfirmacaoReserva dados, java.security.Principal principal) {
+        sessao.exigirDono(service.consultar(id), principal);
         return service.confirmar(id, dados);
     }
 

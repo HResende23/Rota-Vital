@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+@org.springframework.security.test.context.support.WithMockUser(username = "solicitante@example.com")
 @AutoConfigureMockMvc
 class EstoqueIntegrationTests {
     @Autowired MockMvc mvc;
@@ -42,7 +43,7 @@ class EstoqueIntegrationTests {
 
     @Test
     void cadastraPersisteEConsultaBolsaValidaHoje() throws Exception {
-        mvc.perform(post("/api/v1/bolsas").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/bolsas").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("B1", LocalDate.now().toString(), "DISPONIVEL")))
             .andExpect(status().isCreated()).andExpect(jsonPath("$.codigo").value("B1"));
         assertEquals(1, bolsas.count());
@@ -52,10 +53,10 @@ class EstoqueIntegrationTests {
 
     @Test
     void duplicataNaoSobrescreveDadosOriginais() throws Exception {
-        mvc.perform(post("/api/v1/bolsas").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/bolsas").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("B1", LocalDate.now().toString(), "DISPONIVEL")))
             .andExpect(status().isCreated());
-        mvc.perform(post("/api/v1/bolsas").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/bolsas").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("B1", LocalDate.now().plusDays(3).toString(), "RESERVADA")))
             .andExpect(status().isBadRequest()).andExpect(jsonPath("$.erro").exists());
         var bolsa = bolsas.findById("B1").orElseThrow();
@@ -68,14 +69,14 @@ class EstoqueIntegrationTests {
     @ValueSource(strings = {"{}", "{", "{\"componente\":\"INVALIDO\"}",
         "{\"validade\":\"data-invalida\"}", "null"})
     void rejeitaCorpoInvalidoSemPersistir(String json) throws Exception {
-        mvc.perform(post("/api/v1/bolsas").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/bolsas").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(json)).andExpect(status().isBadRequest());
         assertEquals(0, bolsas.count());
     }
 
     @Test
     void rejeitaBolsaVencida() throws Exception {
-        mvc.perform(post("/api/v1/bolsas").contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/v1/bolsas").with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("B1", LocalDate.now().minusDays(1).toString(), "DISPONIVEL")))
             .andExpect(status().isBadRequest());
         assertEquals(0, bolsas.count());

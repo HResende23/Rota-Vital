@@ -23,7 +23,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResposta consultar(@PathVariable Long id) { return service.consultar(id); }
+    public UserResposta consultar(@PathVariable Long id, java.security.Principal principal) {
+        UserResposta resposta = service.consultar(id);
+        if (!resposta.email().equals(principal.getName())) {
+            throw new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Acesso negado");
+        }
+        return resposta;
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, String>> tratarErro(ResponseStatusException erro) {

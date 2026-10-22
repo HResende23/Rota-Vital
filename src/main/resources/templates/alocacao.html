@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Rota Vital: alocação de bolsas — protótipo acadêmico de baixa fidelidade.">
+        <title>
+            Alocação | Rota Vital
+        </title>
+        <link rel="stylesheet" href="/css/styles.css">
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
+    </head>
+    <body>
+        <a class="skip-link" href="#conteudo">
+            Pular para o conteúdo
+        </a>
+        <header th:replace="~{fragments/layout :: topbar}"></header>
+        <div class="layout">
+            <aside th:replace="~{fragments/layout :: sidebar('alocacao')}"></aside>
+            <main id="conteudo" class="screen screen-3">
+                <header class="page-heading">
+                    <p>
+                        T03 / HU03
+                    </p>
+                    <h1>
+                        Alocação de bolsas
+                    </h1>
+                    <span>
+                        Responsável pela distribuição
+                    </span>
+                </header>
+                <div class="page-content">
+
+<p class="auth-feedback" role="status" th:if="${sucesso}" th:text="${sucesso}"></p>
+<p class="auth-feedback" role="alert" th:if="${erro}" th:text="${erro}"></p>
+<form method="get" th:action="@{/alocacao}" class="actions">
+<label>Requisição<select name="requisicaoId" required><option value="">Selecione uma requisição</option><option th:each="r : ${requisicoes}" th:value="${r.id}" th:text="|${r.id} · ${r.hospital} · ${r.status.rotulo}|" th:selected="${requisicao != null and r.id == requisicao.id}"></option></select></label>
+<button class="button" type="submit">Consultar proposta</button>
+</form>
+<p th:if="${#lists.isEmpty(requisicoes)}">Nenhuma requisição cadastrada. <a th:href="@{/requisicao}">Criar requisição</a></p>
+<section th:if="${requisicao != null}">
+<div class="panel"><h2 th:text="|Requisição ${requisicao.id} · ${requisicao.hospital}|"></h2><p th:text="|${requisicao.quantidade} bolsas · ${requisicao.componente.rotulo} · ${requisicao.tipoSanguineo.rotulo}|"></p></div>
+<div th:if="${proposta != null}">
+<form method="post" th:action="@{/alocacao/{id}/reserva(id=${requisicao.id})}">
+<div class="table-wrap"><table><thead><tr><th>Seleção</th><th>Bolsa</th><th>Tipo</th><th>Validade</th></tr></thead><tbody>
+<tr th:each="b : ${proposta.bolsas}"><td><input class="bolsa-checkbox" type="checkbox" name="codigosBolsas" th:value="${b.codigo}" th:attr="aria-label=|Selecionar bolsa ${b.codigo}|" checked></td><td th:text="${b.codigo}"></td><td th:text="${b.tipoSanguineo.rotulo}"></td><td th:text="${b.validade}"></td></tr>
+<tr th:if="${#lists.isEmpty(proposta.bolsas)}"><td colspan="4">Não há bolsas elegíveis no estoque.</td></tr>
+</tbody></table></div>
+<section class="panel summary"><h2 th:text="|Solicitadas: ${proposta.solicitadas} / Selecionadas: ${proposta.selecionadas} / Faltantes: ${proposta.faltantes}|"></h2><p>A disponibilidade será revalidada ao confirmar a reserva.</p></section>
+<button class="button" type="submit" th:disabled="${proposta.faltantes > 0}">Confirmar reserva</button>
+<p th:if="${proposta.faltantes > 0}">Estoque insuficiente para reservar a quantidade completa.</p>
+</form></div>
+<section class="panel" th:if="${requisicao.status.name() == 'ALOCADA'}"><h2>Requisição alocada</h2><p th:text="|Bolsas reservadas: ${#strings.listJoin(requisicao.codigosBolsas, ', ')}|"></p></section>
+</section>
+
+</div>
+                <footer>
+                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
+                </footer>
+            </main>
+        </div>
+    </body>
+</html>

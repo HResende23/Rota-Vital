@@ -193,54 +193,41 @@ https://drive.google.com/file/d/1nVxMmE_J_bPVI7s0wxBI1vTj-OuuL3cz/view?usp=shari
 | Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos |
 
 
-### Usuários e vínculo com requisições
+### Interface web integrada e autenticação
 
-Cadastre um solicitante em `POST /api/v1/usuarios`:
+Abra a aplicação em [http://localhost:8080/](http://localhost:8080/).
+Visitantes são encaminhados ao login. Use **Criar conta** para registrar nome,
+e-mail e senha; depois entre para consultar/cadastrar estoque, enviar requisições
+e confirmar reservas. O botão **Sair** encerra a sessão.
 
-```json
-{"nome":"Ana Silva","email":"ana@example.com"}
+As sete telas são renderizadas por Thymeleaf em
+`src/main/resources/templates`; CSS e JavaScript permanecem em `static`.
+Os caminhos antigos `*.html` são preservados por controllers.
+
+- Registro: `GET/POST /registro`.
+- Login: `GET/POST /login`; logout: `POST /logout`.
+- Estoque: `GET /estoque`, filtros de componente/tipo e `POST /bolsas`.
+- Requisições: `GET /requisicao` e `POST /requisicoes`.
+- Alocação: `GET /alocacao?requisicaoId=ID` e `POST /alocacao/{id}/reserva`.
+- Rota e monitoramento continuam demonstrações identificadas na interface.
+
+Senhas são armazenadas somente como BCrypt. As páginas operacionais e APIs
+exigem sessão autenticada; formulários POST são protegidos por CSRF.
+Requisições são vinculadas ao usuário conectado, que só pode consultar/reservar
+suas próprias solicitações. As APIs preservam `/api/v1`, mas requisições não
+autenticadas recebem 401; mutações exigem CSRF. A criação REST de requisição
+mantém `usuarioId` no JSON e exige que seja o ID da sessão.
+
+A API `POST /api/v1/usuarios` anterior continua protegida por login e cadastra
+somente nome/e-mail. Para uma conta capaz de entrar, use o registro web.
+Usuários antigos sem senha e requisições antigas sem vínculo são preservados,
+sem senha padrão ou atribuição automática.
+
+Reinicie/recompile a aplicação após atualizar. Se usar Docker:
+
+```bash
+docker compose up --build
 ```
 
-A resposta retorna `201`, o ID e o cabeçalho `Location`. Consulte o cadastro com
-`GET /api/v1/usuarios/{id}`. O e-mail é normalizado para minúsculas e deve ser único
-(duplicatas retornam `409`); dados inválidos retornam `400`.
-
-Novas requisições exigem um usuário existente:
-
-```json
-{
-  "usuarioId": 1,
-  "hospital": "Hospital Aurora",
-  "componente": "CONCENTRADO_HEMACIAS",
-  "tipoSanguineo": "A_POSITIVO",
-  "quantidade": 2
-}
-```
-
-Envie para `POST /api/v1/requisicoes`. Omitir `usuarioId`, enviar nulo ou um valor
-não positivo retorna `400`; usuário inexistente retorna `404`. A resposta de
-cadastro, consulta e reserva inclui `usuarioId`.
-
-A entidade `User` é persistida na tabela `usuarios`; `requisicao.usuario_id`
-é uma chave estrangeira com relação muitos-para-um. A coluna aceita nulo somente
-para preservar registros antigos; o fluxo de cadastro exige vínculo em toda nova
-requisição. Não há exclusão em cascata de usuário nem cadastro implícito durante
-a criação de requisição. Com o atual `ddl-auto=update`, o Hibernate cria a tabela
-e adiciona a coluna ao iniciar a aplicação; faça backup antes de atualizar uma
-base com dados importantes.
-
-Este cadastro identifica o solicitante, mas ainda não implementa autenticação:
-o ID informado não comprova identidade. Login, senha e autorização precisam de
-uma etapa própria antes de disponibilizar dados reais.
-
-### Telas de acesso
-
-- `/login.html`: e-mail, senha e link para registro.
-- `/registro.html`: nome, e-mail, senha e confirmação.
-
-As páginas ficam em `src/main/resources/static`, seguindo a estrutura atual
-do projeto (sem Thymeleaf). Compartilham o CSS existente, com estilos de acesso
-isolados, e o script `js/acesso.js`, que valida campos obrigatórios e confirmação
-de senha. Os formulários ainda não enviam dados: a API atual não possui cadastro
-com senha nem autenticação. As mensagens na interface deixam essa etapa explícita.
-A página inicial de estoque e as outras quatro telas continuam nos mesmos endereços.
+**Documentação detalhada:** [Integração web e Thymeleaf](docs/integracao-web-thymeleaf.md).
+**Issue de acompanhamento:** [#6 — Integração web e autenticação](https://github.com/HResende23/Rota-Vital/issues/6).

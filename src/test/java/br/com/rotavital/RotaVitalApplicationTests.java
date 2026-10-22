@@ -13,11 +13,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@org.springframework.security.test.context.support.WithMockUser(username = "solicitante@example.com")
 @AutoConfigureMockMvc
 class RotaVitalApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired br.com.rotavital.repository.UserRepository users;
+
+    @org.junit.jupiter.api.BeforeEach
+    void usuario() {
+        if (!users.existsByEmail("solicitante@example.com")) {
+            users.saveAndFlush(new br.com.rotavital.model.User("Solicitante", "solicitante@example.com"));
+        }
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {
