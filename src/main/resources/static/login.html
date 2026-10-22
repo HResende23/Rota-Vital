@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Rota Vital</title>
+    <meta name="description" content="Acesso de usuários ao Rota Vital.">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/acesso.js" defer></script>
+</head>
+<body class="auth-page">
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="topbar"><strong>ROTA VITAL</strong><span>PROTÓTIPO LO-FI / DADOS SINTÉTICOS</span></header>
+    <main id="conteudo" class="auth-main">
+        <section class="auth-content" aria-labelledby="titulo">
+            <header class="page-heading">
+                <p>T00 / ACESSO</p>
+                <h1 id="titulo">Entrar no Rota Vital</h1>
+                <span>Acesse sua conta para acompanhar o estoque e as requisições de hemocomponentes.</span>
+            </header>
+            <form class="auth-form" data-acesso="login" aria-describedby="aviso">
+                <label for="email">E-mail
+                    <input id="email" name="email" type="email" autocomplete="username" placeholder="seu.email@exemplo.com" maxlength="254" required>
+                </label>
+                <label for="senha">Senha
+                    <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="••••••••" required>
+                </label>
+                <button class="button auth-submit" type="submit">Entrar</button>
+                <p class="auth-feedback" role="status" aria-live="polite" hidden></p>
+                <a class="auth-link" href="registro.html">Não possui uma conta? Cadastre-se</a>
+            </form>
+            <p id="aviso" class="auth-notice">Prévia da interface: autenticação ainda não disponível.</p>
+            <a class="auth-link" href="index.html">Explorar as telas do protótipo</a>
+        </section>
+    </main>
+    <footer class="auth-footer">Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.</footer>
+</body>
+</html>

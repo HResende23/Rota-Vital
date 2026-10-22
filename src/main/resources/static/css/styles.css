@@ -76,3 +76,23 @@ footer { font-size: 11px; color: #666; margin-top: 22px; }
 @media (min-width: 1500px) { .page-content { max-width: 1180px; } }
 @media (max-width: 1000px) { .screen { padding: 24px; } .filters { grid-template-columns: 1fr 1fr; } .route-layout { grid-template-columns: 1fr; } .feasibility { display: grid; gap: 5px; grid-template-columns: 1fr 1fr; } .feasibility h2 { grid-column: 1 / -1; } }
 @media (max-width: 680px) { .topbar { padding: 16px; flex-wrap: wrap; gap: 4px; } .topbar span { margin: 0; font-size: 11px; } .layout { display: block; } .sidebar { padding: 12px; border-right: 0; border-bottom: 1px solid #ddd; } .sidebar h2, .unit { display: none; } .sidebar nav { display: flex; flex-wrap: wrap; gap: 4px; } .sidebar nav a { font-size: 13px; padding: 8px; min-height: 38px; } .screen { padding: 22px 16px; min-height: auto; } h1 { font-size: 25px; } .stats { gap: 8px; } .stat { padding: 10px 8px; } .stat h2 { font-size: 10px; } .stat p { font-size: 20px; } .two, .three, .filters { grid-template-columns: 1fr; } .nested { grid-template-columns: 1fr 1fr; } .actions { align-items: flex-start; flex-direction: column; gap: 12px; } th, td { padding: 10px; } table { min-width: 590px; } .route-node { padding: 8px; font-size: 11px; } .route-node strong { font-size: 12px; } .detour span { font-size: 11px; left: 0; } .direct strong { font-size: 12px; left: 5px; } .alert h2 { font-size: 19px; } .alert-status { font-size: 16px; } }
+
+/* Acesso: telas alinhadas ao protótipo Figma, sem alterar as telas de distribuição. */
+.auth-page { min-height: 100vh; display: flex; flex-direction: column; }
+.auth-main { flex: 1; width: 100%; padding: 88px 24px 40px; }
+.auth-content { width: 100%; max-width: 470px; margin: 0 auto; }
+.auth-content .page-heading { margin-bottom: 28px; }
+.auth-content .page-heading span { display: block; }
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+.auth-form input { display: block; }
+.auth-submit { justify-content: center; width: 100%; min-height: 45px; cursor: pointer; }
+.auth-submit:hover { background: #555; }
+.auth-link { font-size: 13px; }
+.auth-notice { margin: 24px 0 12px; font-size: 12px; color: #555; }
+.auth-feedback { margin: 0; padding: 12px; border: 1px solid var(--line); background: var(--muted); font-size: 14px; }
+.auth-footer { width: 100%; max-width: 796px; margin: 0 auto; padding: 0 0 15px; }
+.auth-register .auth-main { padding-top: 40px; }
+@media (max-width: 680px) {
+    .auth-main, .auth-register .auth-main { padding: 32px 16px; }
+    .auth-footer { padding: 0 16px 16px; }
+}

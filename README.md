@@ -232,3 +232,15 @@ base com dados importantes.
 Este cadastro identifica o solicitante, mas ainda não implementa autenticação:
 o ID informado não comprova identidade. Login, senha e autorização precisam de
 uma etapa própria antes de disponibilizar dados reais.
+
+### Telas de acesso
+
+- `/login.html`: e-mail, senha e link para registro.
+- `/registro.html`: nome, e-mail, senha e confirmação.
+
+As páginas ficam em `src/main/resources/static`, seguindo a estrutura atual
+do projeto (sem Thymeleaf). Compartilham o CSS existente, com estilos de acesso
+isolados, e o script `js/acesso.js`, que valida campos obrigatórios e confirmação
+de senha. Os formulários ainda não enviam dados: a API atual não possui cadastro
+com senha nem autenticação. As mensagens na interface deixam essa etapa explícita.
+A página inicial de estoque e as outras quatro telas continuam nos mesmos endereços.
