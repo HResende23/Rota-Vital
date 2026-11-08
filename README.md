@@ -177,11 +177,25 @@ As quatro issues foram utilizadas durante o desenvolvimento e encerradas após a
 
 ![Issues da Entrega 02](docs/entrega-02/issues-entrega-02.png)
 
----
 
 ## 🎥 Screencasts da Entrega 03
 
 https://drive.google.com/file/d/1nVxMmE_J_bPVI7s0wxBI1vTj-OuuL3cz/view?usp=sharing
+
+---
+## 📦 Entrega 04
+
+Nesta entrega foram implementadas melhorias de autenticação e integração da interface web com os fluxos principais do sistema.
+
+### Histórias implementadas
+
+- **História 05 — Cadastro e autenticação de usuários**
+- **História 06 — Utilização dos fluxos do sistema pela interface web**
+
+📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
+
+---
+
 
 ## 👥 Integrantes
 
