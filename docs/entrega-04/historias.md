@@ -2,9 +2,9 @@
 
 ## História 05 — Cadastro e autenticação de usuários
 
-**Como** usuário do Rota Vital  
-**Quero** criar uma conta e realizar login no sistema  
-**Para** acessar de forma segura as funcionalidades disponíveis para usuários autenticados.
+> **Como** usuário do Rota Vital  
+> **Quero** criar uma conta e realizar login no sistema  
+> **Para** acessar de forma segura as funcionalidades disponíveis para usuários autenticados.
 
 ### Critérios de aceitação
 
@@ -27,9 +27,9 @@
 
 ## História 06 — Utilização dos fluxos do sistema pela interface web
 
-**Como** usuário autenticado do Rota Vital  
-**Quero** consultar e executar as operações de estoque, requisição e alocação através da interface web  
-**Para** utilizar as funcionalidades do sistema sem depender diretamente das chamadas da API REST.
+> **Como** usuário autenticado do Rota Vital  
+> **Quero** consultar e executar as operações de estoque, requisição e alocação através da interface web  
+> **Para** utilizar as funcionalidades do sistema sem depender diretamente das chamadas da API REST.
 
 ### Critérios de aceitação
 

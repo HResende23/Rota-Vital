@@ -194,18 +194,9 @@ Nesta entrega foram implementadas melhorias de autenticação e integração da 
 
 📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
 
----
+### Issue / Bug Tracker
 
-
-## 👥 Integrantes
-
-| Integrante |
-|---|
-| Hilton Resende Montes Neto |
-| Jardel Simplicio de Oliveira Junior |
-| Dayanne Cristina Moraes Inacio |
-| Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos |
-
+- `#6` — **Integração web, autenticação e fluxos de estoque e requisições**
 
 ### Interface web integrada e autenticação
 
@@ -245,3 +236,14 @@ docker compose up --build
 
 **Documentação detalhada:** [Integração web e Thymeleaf](docs/integracao-web-thymeleaf.md).
 **Issue de acompanhamento:** [#6 — Integração web e autenticação](https://github.com/HResende23/Rota-Vital/issues/6).
+
+## 👥 Integrantes
+
+| Integrante |
+|---|
+| Hilton Resende Montes Neto |
+| Jardel Simplicio de Oliveira Junior |
+| Dayanne Cristina Moraes Inacio |
+| Rodrigo Cavalcanti Albuquerque Rodrigues dos Santos |
+
+
