@@ -198,6 +198,10 @@ Nesta entrega foram implementadas melhorias de autenticação e integração da 
 
 - `#6` — **Integração web, autenticação e fluxos de estoque e requisições**
 
+### Evidência do Issue/Bug Tracker
+
+![Issues da Entrega 04](docs/entrega-04/issues-entrega-04.png)
+
 ### Interface web integrada e autenticação
 
 Abra a aplicação em [http://localhost:8080/](http://localhost:8080/).
