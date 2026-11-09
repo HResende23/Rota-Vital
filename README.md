@@ -194,7 +194,9 @@ Nesta entrega foram implementadas melhorias de autenticação e integração da 
 
 📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
 
-Screencast Mostrando o fluxo da informação no backend após usuário logado - requisição de bolsas e conferir estoque - https://youtu.be/tQ7MXJwF-qw
+## 🎥 Screencasts da Entrega 04 Mostrando o fluxo da informação no backend após usuário logado - requisição de bolsas e conferir estoque:
+
+ https://youtu.be/tQ7MXJwF-qw
 
 ### Issue / Bug Tracker
 
