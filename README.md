@@ -189,10 +189,12 @@ Nesta entrega foram implementadas melhorias de autenticação e integração da 
 
 ### Histórias implementadas
 
-- **História 05 — Cadastro e autenticação de usuários**
+- **História 05 — Cadastro e autenticação de usuários - Diferenciações entre @logged e não logado utilizando spring security para retorno adequado de telas apenas para usuários logados na aplicação **
 - **História 06 — Utilização dos fluxos do sistema pela interface web**
 
 📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
+
+Screencast Mostrando o fluxo da informação no backend após usuário logado - requisição de bolsas e conferir estoque - https://youtu.be/tQ7MXJwF-qw
 
 ### Issue / Bug Tracker
 
