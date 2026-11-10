@@ -12,7 +12,11 @@ public interface RemessaRepository extends JpaRepository<Remessa, Long> {
 
     Optional<Remessa> findByRequisicaoId(Long requisicaoId);
 
-    @Query("select r from Remessa r where r.requisicao.usuario.id = :usuarioId order by r.id desc")
+    /** Traz a requisição de cada remessa na mesma consulta: o resumo da listagem exibe seus dados. */
+    @Query("""
+        select r from Remessa r join fetch r.requisicao q
+        where q.usuario.id = :usuarioId
+        order by r.id desc""")
     List<Remessa> listarDoUsuario(@Param("usuarioId") Long usuarioId);
 
     /** Serializa leituras e mudanças de situação concorrentes da mesma remessa. */

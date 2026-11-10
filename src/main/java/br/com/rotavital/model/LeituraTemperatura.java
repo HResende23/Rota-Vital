@@ -5,9 +5,14 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 
-/** Leitura do sensor da caixa térmica. É criada somente pela própria remessa. */
+/**
+ * Leitura do sensor da caixa térmica. É criada somente pela própria remessa.
+ * O índice (remessa, horário) atende o filtro por remessa e a ordem cronológica das leituras
+ * na mesma varredura, além da exclusão em cascata quando a remessa é apagada.
+ */
 @Entity
-@Table(name = "leitura_temperatura")
+@Table(name = "leitura_temperatura",
+    indexes = @Index(name = "idx_leitura_remessa_horario", columnList = "remessa_id, registrada_em"))
 public class LeituraTemperatura {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -5,6 +5,8 @@ import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
+// O PostgreSQL não indexa chaves estrangeiras sozinho; as telas listam requisições por usuário.
+@Table(indexes = @Index(name = "idx_requisicao_usuario", columnList = "usuario_id"))
 public class Requisicao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +28,8 @@ public class Requisicao {
     @JoinTable(name = "requisicao_bolsa",
         joinColumns = @JoinColumn(name = "requisicao_id"),
         inverseJoinColumns = @JoinColumn(name = "bolsa_codigo"),
-        uniqueConstraints = @UniqueConstraint(columnNames = "bolsa_codigo"))
+        uniqueConstraints = @UniqueConstraint(columnNames = "bolsa_codigo"),
+        indexes = @Index(name = "idx_requisicao_bolsa_requisicao", columnList = "requisicao_id"))
     private List<BolsaHemoComponente> bolsas = new ArrayList<>();
 
     // Nullable para preservar requisições anteriores ao cadastro de usuários.

@@ -133,8 +133,8 @@ sh mvnw clean verify
 ```
 
 Os testes usam H2 em modo PostgreSQL e não alteram o banco da aplicação.
-A suíte contém 333 testes (Entrega 05). Consulte
-[a documentação da refatoração e dos testes](docs/backend-tdd.md) para detalhes.
+A suíte contém 338 testes (Entrega 04). Consulte
+[a documentação da refatoração e dos testes](docs/entrega-03/backend-tdd.md) para detalhes.
 
 ### Versão da entrega
 
@@ -181,14 +181,23 @@ https://drive.google.com/file/d/1nVxMmE_J_bPVI7s0wxBI1vTj-OuuL3cz/view?usp=shari
 ---
 ## 📦 Entrega 04
 
-Nesta entrega foram implementadas melhorias de autenticação e integração da interface web com os fluxos principais do sistema.
+Nesta entrega foram implementadas melhorias de autenticação e integração da interface web com os fluxos principais do sistema. As telas de **Rota** e **Monitoramento** também passaram a usar o backend: **assim que a reserva é confirmada, a remessa é aberta e o sensor da caixa térmica passa a ser monitorado**. Todas as telas receberam a identidade vermelho e branco, com o logo Rota Vital no canto superior esquerdo.
 
 ### Histórias implementadas
 
-- **História 05 — Cadastro e autenticação de usuários - Diferenciações entre @logged e não logado utilizando spring security para retorno adequado de telas apenas para usuários logados na aplicação **
+- **História 05 — Cadastro e autenticação de usuários - Diferenciações entre @logged e não logado utilizando spring security para retorno adequado de telas apenas para usuários logados na aplicação**
 - **História 06 — Utilização dos fluxos do sistema pela interface web**
+- **História 07 — Monitorar a cadeia fria da remessa:** leituras do sensor, faixa térmica por
+  componente, desvio, alerta térmico com bloqueio das bolsas, reconhecimento do alerta e
+  encerramento na entrega.
+- **História 08 — Planejar a rota de entrega:** comparação de caminhos na malha sintética,
+  horário de pico, critérios de viabilidade (janela do hospital, capacidade da caixa, autonomia
+  térmica e validade das bolsas) e confirmação do caminho viável mais rápido.
+- **Frontend — Identidade visual e responsividade** em todas as telas.
 
 📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
+
+📄 [Melhorias do backend a partir do log do Docker](docs/entrega-04/melhorias-backend.md)
 
 ## 🎥 Screencasts da Entrega 04 Mostrando o fluxo da informação no backend após usuário logado - requisição de bolsas e conferir estoque:
 
@@ -218,7 +227,9 @@ Os caminhos antigos `*.html` são preservados por controllers.
 - Estoque: `GET /estoque`, filtros de componente/tipo e `POST /bolsas`.
 - Requisições: `GET /requisicao` e `POST /requisicoes`.
 - Alocação: `GET /alocacao?requisicaoId=ID` e `POST /alocacao/{id}/reserva`.
-- Rota e monitoramento continuam demonstrações identificadas na interface.
+- Rota: `GET /rota?remessaId=ID` e `POST /rota/{id}/planejamento`.
+- Monitoramento: `GET /monitoramento?remessaId=ID` e `POST /monitoramento/{id}/leituras`,
+  `.../alerta/reconhecimento`, `.../transporte` e `.../entrega`.
 
 Senhas são armazenadas somente como BCrypt. As páginas operacionais e APIs
 exigem sessão autenticada; formulários POST são protegidos por CSRF.
@@ -241,27 +252,7 @@ docker compose up --build
 **Documentação detalhada:** [Integração web e Thymeleaf](docs/integracao-web-thymeleaf.md).
 **Issue de acompanhamento:** [#6 — Integração web e autenticação](https://github.com/HResende23/Rota-Vital/issues/6).
 
----
-## 📦 Entrega 05
-
-As telas de **Rota** e **Monitoramento** deixaram de ser demonstrações e passaram a usar o
-backend. O monitoramento é ligado à alocação: **assim que a reserva é confirmada, a remessa é
-aberta e o sensor da caixa térmica passa a ser monitorado**. Todas as telas receberam a
-identidade vermelho e branco, com o logo Rota Vital no canto superior esquerdo.
-
-### Histórias implementadas
-
-- **História 07 — Monitorar a cadeia fria da remessa:** leituras do sensor, faixa térmica por
-  componente, desvio, alerta térmico com bloqueio das bolsas, reconhecimento do alerta e
-  encerramento na entrega.
-- **História 08 — Planejar a rota de entrega:** comparação de caminhos na malha sintética,
-  horário de pico, critérios de viabilidade (janela do hospital, capacidade da caixa, autonomia
-  térmica e validade das bolsas) e confirmação do caminho viável mais rápido.
-- **Melhoria — Identidade visual e responsividade** em todas as telas.
-
-📄 [Documentação das histórias da Entrega 05](docs/entrega-05/historias.md)
-
-### Fluxo completo
+### Rota e monitoramento
 
 ```text
 Estoque → Requisição → Alocação (reserva) → Remessa aberta + monitoramento
@@ -269,28 +260,22 @@ Estoque → Requisição → Alocação (reserva) → Remessa aberta + monitoram
         (2 leituras seguidas fora da faixa → Pendente de avaliação, bolsas bloqueadas)
 ```
 
-### Rotas novas
-
-| Tela / API | Caminho |
+| API | Caminho |
 |---|---|
-| Rota | `GET /rota`, `POST /rota/{id}/planejamento` |
-| Monitoramento | `GET /monitoramento`, `POST /monitoramento/{id}/leituras`, `.../alerta/reconhecimento`, `.../transporte`, `.../entrega` |
-| API de remessas | `GET /api/v1/remessas`, `GET /api/v1/remessas/{id}`, `POST /api/v1/remessas/{id}/leituras` |
-| API de rota | `GET /api/v1/remessas/{id}/rota/alternativas`, `POST /api/v1/remessas/{id}/rota` |
-| API de situação | `POST /api/v1/remessas/{id}/alerta/reconhecimento`, `.../transporte`, `.../entrega` |
+| Remessas | `GET /api/v1/remessas`, `GET /api/v1/remessas/{id}`, `POST /api/v1/remessas/{id}/leituras` |
+| Rota | `GET /api/v1/remessas/{id}/rota/alternativas`, `POST /api/v1/remessas/{id}/rota` |
+| Situação | `POST /api/v1/remessas/{id}/alerta/reconhecimento`, `.../transporte`, `.../entrega` |
 
 As APIs seguem as regras anteriores: sessão autenticada, CSRF nas mutações e acesso somente
 às remessas das próprias requisições.
 
-Depois de atualizar, reconstrua a imagem:
-
-```bash
-docker compose up --build
-```
-
-As tabelas novas (`remessa` e `leitura_temperatura`) são criadas automaticamente; os dados
-existentes são preservados. Requisições alocadas antes desta entrega mostram o botão
+Ao reconstruir a imagem (`docker compose up --build`), as tabelas novas (`remessa` e
+`leitura_temperatura`) e seus índices são criados automaticamente, e os dados existentes são
+preservados. Requisições alocadas antes do monitoramento mostram o botão
 **Iniciar monitoramento** na tela de alocação.
+
+**Documentação detalhada:** [histórias, ciclo da remessa e modelagem](docs/entrega-04/historias.md)
+e [melhorias do backend](docs/entrega-04/melhorias-backend.md).
 
 ## 👥 Integrantes
 
