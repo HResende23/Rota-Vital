@@ -13,16 +13,22 @@ O projeto busca reduzir desperdícios por vencimento, melhorar a visualização 
 - Spring Boot
 - Spring Web
 - Spring Data JPA
+- Spring Security
 - Hibernate
 - Bean Validation
 - Maven
 
 ### Banco de dados
-- PostgreSQL
+- PostgreSQL (aplicação) e H2 (testes)
 
 ### Frontend
+- Thymeleaf
 - HTML5
-- CSS3
+- CSS3 (identidade vermelho e branco, responsiva)
+- SVG (logo e mapa de rotas)
+
+### Execução
+- Docker e Docker Compose
 
 ### Versionamento e gestão
 - Git
@@ -38,32 +44,22 @@ Rota-Vital/
 ├── src/
 │   ├── main/
 │   │   ├── java/br/com/rotavital/
-│   │   │   ├── controller/
-│   │   │   │   └── EstoqueController.java
-│   │   │   ├── model/
-│   │   │   │   ├── BolsaHemoComponente.java
-│   │   │   │   ├── StatusBolsa.java
-│   │   │   │   ├── TipoComponente.java
-│   │   │   │   └── TipoSanguineo.java
-│   │   │   ├── repository/
-│   │   │   │   └── BolsaHemoComponenteRepository.java
-│   │   │   ├── service/
-│   │   │   │   └── EstoqueService.java
+│   │   │   ├── config/        # Spring Security e relógio da aplicação
+│   │   │   ├── controller/    # telas Thymeleaf e APIs REST /api/v1
+│   │   │   ├── dto/           # formulários e respostas
+│   │   │   ├── model/         # bolsa, requisição, remessa, leitura, malha viária
+│   │   │   ├── repository/    # Spring Data JPA
+│   │   │   ├── service/       # estoque, alocação, monitoramento, rota
 │   │   │   └── RotaVitalApplication.java
 │   │   └── resources/
-│   │       ├── static/
-│   │       │   ├── index.html
-│   │       │   ├── requisicao.html
-│   │       │   ├── alocacao.html
-│   │       │   ├── rota.html
-│   │       │   └── monitoramento.html
+│   │       ├── templates/     # login, registro, estoque, requisição, alocação, rota, monitoramento
+│   │       ├── static/        # css, js e img (logo e favicon)
 │   │       └── application.properties
-│   └── test/
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-└── README.md
-
+│   └── test/                  # testes de domínio, integração e fluxo web (H2)
+├── docs/                      # histórias e documentação de cada entrega
+├── Dockerfile
+├── compose.yaml
+└── pom.xml
 ```
 ## Executar com Docker
 
@@ -137,7 +133,7 @@ sh mvnw clean verify
 ```
 
 Os testes usam H2 em modo PostgreSQL e não alteram o banco da aplicação.
-A suíte desta entrega contém 249 testes. Consulte
+A suíte contém 333 testes (Entrega 05). Consulte
 [a documentação da refatoração e dos testes](docs/backend-tdd.md) para detalhes.
 
 ### Versão da entrega
@@ -189,10 +185,14 @@ Nesta entrega foram implementadas melhorias de autenticação e integração da 
 
 ### Histórias implementadas
 
-- **História 05 — Cadastro e autenticação de usuários**
+- **História 05 — Cadastro e autenticação de usuários - Diferenciações entre @logged e não logado utilizando spring security para retorno adequado de telas apenas para usuários logados na aplicação **
 - **História 06 — Utilização dos fluxos do sistema pela interface web**
 
 📄 [Documentação das histórias da Entrega 04](docs/entrega-04/historias.md)
+
+## 🎥 Screencasts da Entrega 04 Mostrando o fluxo da informação no backend após usuário logado - requisição de bolsas e conferir estoque:
+
+ https://youtu.be/tQ7MXJwF-qw
 
 ### Issue / Bug Tracker
 
@@ -240,6 +240,57 @@ docker compose up --build
 
 **Documentação detalhada:** [Integração web e Thymeleaf](docs/integracao-web-thymeleaf.md).
 **Issue de acompanhamento:** [#6 — Integração web e autenticação](https://github.com/HResende23/Rota-Vital/issues/6).
+
+---
+## 📦 Entrega 05
+
+As telas de **Rota** e **Monitoramento** deixaram de ser demonstrações e passaram a usar o
+backend. O monitoramento é ligado à alocação: **assim que a reserva é confirmada, a remessa é
+aberta e o sensor da caixa térmica passa a ser monitorado**. Todas as telas receberam a
+identidade vermelho e branco, com o logo Rota Vital no canto superior esquerdo.
+
+### Histórias implementadas
+
+- **História 07 — Monitorar a cadeia fria da remessa:** leituras do sensor, faixa térmica por
+  componente, desvio, alerta térmico com bloqueio das bolsas, reconhecimento do alerta e
+  encerramento na entrega.
+- **História 08 — Planejar a rota de entrega:** comparação de caminhos na malha sintética,
+  horário de pico, critérios de viabilidade (janela do hospital, capacidade da caixa, autonomia
+  térmica e validade das bolsas) e confirmação do caminho viável mais rápido.
+- **Melhoria — Identidade visual e responsividade** em todas as telas.
+
+📄 [Documentação das histórias da Entrega 05](docs/entrega-05/historias.md)
+
+### Fluxo completo
+
+```text
+Estoque → Requisição → Alocação (reserva) → Remessa aberta + monitoramento
+        → Rota planejada → Em transporte → Entregue
+        (2 leituras seguidas fora da faixa → Pendente de avaliação, bolsas bloqueadas)
+```
+
+### Rotas novas
+
+| Tela / API | Caminho |
+|---|---|
+| Rota | `GET /rota`, `POST /rota/{id}/planejamento` |
+| Monitoramento | `GET /monitoramento`, `POST /monitoramento/{id}/leituras`, `.../alerta/reconhecimento`, `.../transporte`, `.../entrega` |
+| API de remessas | `GET /api/v1/remessas`, `GET /api/v1/remessas/{id}`, `POST /api/v1/remessas/{id}/leituras` |
+| API de rota | `GET /api/v1/remessas/{id}/rota/alternativas`, `POST /api/v1/remessas/{id}/rota` |
+| API de situação | `POST /api/v1/remessas/{id}/alerta/reconhecimento`, `.../transporte`, `.../entrega` |
+
+As APIs seguem as regras anteriores: sessão autenticada, CSRF nas mutações e acesso somente
+às remessas das próprias requisições.
+
+Depois de atualizar, reconstrua a imagem:
+
+```bash
+docker compose up --build
+```
+
+As tabelas novas (`remessa` e `leitura_temperatura`) são criadas automaticamente; os dados
+existentes são preservados. Requisições alocadas antes desta entrega mostram o botão
+**Iniciar monitoramento** na tela de alocação.
 
 ## 👥 Integrantes
 

@@ -57,6 +57,11 @@ public class BolsaHemoComponente {
         this.status = StatusBolsa.RESERVADA;
     }
 
+    /** Retira a bolsa de uso após um desvio térmico; somente uma avaliação técnica pode liberá-la. */
+    public void bloquear() {
+        this.status = StatusBolsa.INDISPONIVEL;
+    }
+
     public boolean estaVencida() {
         return validade.isBefore(LocalDate.now());
     }
@@ -85,4 +90,4 @@ public class BolsaHemoComponente {
     public StatusBolsa getStatus() {
         return status;
     }
-}
+}

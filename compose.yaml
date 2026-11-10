@@ -22,9 +22,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/rotavital
       SPRING_DATASOURCE_USERNAME: postgres
       DB_PASSWORD: rotavital_local
+      # Horários de leituras, saídas e janelas de entrega no fuso local (UTC-3).
+      TZ: America/Recife
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
-  postgres_data:
+  postgres_data:

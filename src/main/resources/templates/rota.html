@@ -1,121 +1,186 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Rota Vital: planejamento de rota — protótipo acadêmico de baixa fidelidade.">
-        <title>
-            Rota | Rota Vital
-        </title>
-        <link rel="stylesheet" href="/css/styles.css">
-        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
-    </head>
-    <body>
-        <a class="skip-link" href="#conteudo">
-            Pular para o conteúdo
-        </a>
-        <header th:replace="~{fragments/layout :: topbar}"></header>
-        <div class="layout">
-            <aside th:replace="~{fragments/layout :: sidebar('rota')}"></aside>
-            <main id="conteudo" class="screen screen-4">
-                <header class="page-heading">
-                    <p>
-                        T04 / HU04
-                    </p>
-                    <h1>
-                        Planejamento de rota
-                    </h1>
-                    <span>
-                        Planejador logístico
-                    </span>
-                </header>
-                <div class="page-content"><p class="panel">Demonstração: esta etapa ainda não possui integração com backend.</p>
-                    <div class="fields three">
-                        <label>
-                            Requisição alocada
-                            <input type="text" value="RV-014 · 2 bolsas CH" readonly>
-                        </label>
-                        <label>
-                            Saída em 14/09/2026
-                            <input type="text" value="09:30 · Hemocentro" readonly>
-                        </label>
-                        <label>
-                            Transporte
-                            <input type="text" value="Caixa CX-01 · 4 bolsas" readonly>
-                        </label>
-                    </div>
-                    <h2 class="section-title">
-                        Grafo sintético · comparação de caminhos
-                    </h2>
-                    <div class="route-layout">
-                        <figure class="route-graph" aria-label="Hemocentro Central, saída 09:30. Caminho direto: 40 minutos, chegada ao Hospital Aurora às 10:10. Alternativa via P1: 50 minutos.">
-                            <div class="route-node origin">
-                                <strong>
-                                    Hemocentro
-                                </strong>
-                                <span>
-                                    Central · 09:30
-                                </span>
+<head>
+    <th:block th:replace="~{fragments/layout :: metadados('Rota', 'Rota Vital: planejamento de rota da remessa na malha sintética.')}"></th:block>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<header th:replace="~{fragments/layout :: topbar}"></header>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar('rota')}"></aside>
+    <main id="conteudo" class="screen">
+        <header class="page-heading">
+            <p class="eyebrow">Etapa 04 · Logística</p>
+            <h1>Planejamento de rota</h1>
+            <p class="subtitle">Compare os caminhos da malha sintética e confirme o mais rápido que respeita a janela do hospital, a capacidade e a autonomia térmica da caixa e a validade das bolsas.</p>
+        </header>
+        <div class="page-content">
+            <th:block th:replace="~{fragments/layout :: mensagens}"></th:block>
+
+            <section class="card empty" th:if="${#lists.isEmpty(remessas)}">
+                <svg class="empty-icon" viewBox="0 0 32 32" aria-hidden="true">
+                    <path d="M16 2.5c-.5 0-.9.2-1.2.6C12.2 6.7 5.5 15.6 5.5 20.8a10.5 10.5 0 0 0 21 0c0-5.2-6.7-14.1-9.3-17.7-.3-.4-.7-.6-1.2-.6Z" fill="#fbe3e6"/>
+                    <polyline points="9.5,21 13,21 14.6,16.8 17.2,24.6 18.8,19.8 22.5,19.8" fill="none" stroke="#b3121f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h2>Nenhuma remessa para planejar</h2>
+                <p>A remessa nasce quando a reserva das bolsas é confirmada na alocação. Depois disso, ela aparece aqui para receber a rota.</p>
+                <a class="button" th:href="@{/alocacao}">Ir para alocação</a>
+            </section>
+
+            <th:block th:unless="${#lists.isEmpty(remessas)}">
+                <form class="card fields seletor" method="get" th:action="@{/rota}">
+                    <label>Remessa
+                        <select name="remessaId">
+                            <option th:if="${remessa == null}" value="">Selecione uma remessa</option>
+                            <option th:each="r : ${remessas}" th:value="${r.id}" th:text="${r.rotulo}" th:selected="${remessa != null and r.id == remessa.id}"></option>
+                        </select>
+                    </label>
+                    <button class="button button-secundario" type="submit">Abrir remessa</button>
+                </form>
+
+                <p class="flash flash-aviso" th:if="${remessa == null}">Nenhuma remessa aguarda rota. Selecione uma remessa para consultar o plano registrado.</p>
+
+                <th:block th:if="${remessa != null}">
+                    <section class="panel plano-atual" th:if="${remessa.plano != null}" th:with="p=${remessa.plano}">
+                        <div class="panel-head">
+                            <div>
+                                <h2 th:text="|Rota registrada para ${remessa.codigo}|">Rota registrada</h2>
+                                <p th:text="${p.caminhoDescricao}">Caminho</p>
+                                <p class="muted" th:text="|Saída ${#temporals.format(p.saidaPrevista, 'dd/MM HH:mm')} · chegada ${#temporals.format(p.chegadaPrevista, 'HH:mm')} · janela ${#temporals.format(p.janelaInicio, 'HH:mm')}–${#temporals.format(p.janelaFim, 'HH:mm')} · ${p.tempoTotalMinutos} min no total|"></p>
                             </div>
-                            <div class="direct">
-                                <strong>
-                                    40 min
-                                </strong>
+                            <span th:replace="~{fragments/layout :: statusRemessa(${remessa.status})}"></span>
+                        </div>
+                    </section>
+
+                    <section class="panel" th:unless="${remessa.permitePlanejamento}">
+                        <h2 th:text="|${remessa.codigo} · ${remessa.status.rotulo}|">Remessa</h2>
+                        <p th:if="${remessa.status.name() == 'PENDENTE_AVALIACAO'}">A remessa tem alerta térmico pendente de avaliação: as bolsas estão bloqueadas e a rota não pode ser planejada.</p>
+                        <p th:if="${remessa.status.name() == 'EM_TRANSPORTE'}">A remessa já saiu do hemocentro. Acompanhe o trajeto no monitoramento.</p>
+                        <p th:if="${remessa.status.name() == 'ENTREGUE'}">A remessa já foi entregue ao hospital.</p>
+                        <a class="button button-secundario" th:href="@{/monitoramento(remessaId=${remessa.id})}">Abrir monitoramento</a>
+                    </section>
+
+                    <form class="card" method="get" th:action="@{/rota}" th:if="${remessa.permitePlanejamento and parametros != null}">
+                        <input type="hidden" name="remessaId" th:value="${remessa.id}">
+                        <h2 th:text="|Parâmetros de ${remessa.codigo}|">Parâmetros</h2>
+                        <p class="muted" th:text="|Requisição ${remessa.requisicaoId} · ${remessa.hospital} · ${remessa.quantidadeBolsas} ${remessa.quantidadeBolsas == 1 ? 'bolsa' : 'bolsas'} de ${remessa.componente.rotulo}|"></p>
+                        <div class="fields four">
+                            <label>Hospital de destino
+                                <select name="destino" required>
+                                    <option value="">Selecione</option>
+                                    <option th:each="h : ${hospitais}" th:value="${h.codigo}" th:text="${h.nome}" th:selected="${h.codigo == parametros.destino}"></option>
+                                </select>
+                            </label>
+                            <label>Saída prevista
+                                <input type="datetime-local" name="saida" required th:value="${#temporals.format(parametros.saida, 'yyyy-MM-dd''T''HH:mm')}">
+                            </label>
+                            <label>Janela abre
+                                <input type="time" name="janelaInicio" required th:value="${parametros.janelaInicio}">
+                            </label>
+                            <label>Janela fecha
+                                <input type="time" name="janelaFim" required th:value="${parametros.janelaFim}">
+                            </label>
+                        </div>
+                        <div class="actions compacto">
+                            <button class="button button-secundario" type="submit">Simular caminhos</button>
+                            <span class="muted">No pico (07h–09h e 17h–19h), as vias urbanas ficam 50% mais lentas.</span>
+                        </div>
+                    </form>
+
+                    <th:block th:if="${planejamento != null}" th:with="pl=${planejamento},destaque=${planejamento.emDestaque}">
+                        <div class="info-grid">
+                            <div class="info"><span>Remessa</span><strong th:text="${remessa.codigo}">R-001</strong><small th:text="|${remessa.quantidadeBolsas} ${remessa.quantidadeBolsas == 1 ? 'bolsa' : 'bolsas'} · ${remessa.componente.rotulo}|"></small></div>
+                            <div class="info"><span>Saída</span><strong th:text="${#temporals.format(pl.parametros.saida, 'dd/MM · HH:mm')}"></strong><small th:text="${pl.origem.nome}"></small></div>
+                            <div class="info"><span>Transporte</span><strong th:text="${remessa.descricaoDaCaixa}"></strong><small th:text="|${remessa.capacidade} bolsas · autonomia de ${remessa.caixa.autonomiaMinutos} min|"></small></div>
+                            <div class="info"><span>Janela do hospital</span><strong th:text="|${#temporals.format(pl.janelaInicio, 'HH:mm')}–${#temporals.format(pl.janelaFim, 'HH:mm')}|"></strong><small th:text="${pl.horarioDePico} ? 'Horário de pico: vias urbanas +50%' : 'Fora do horário de pico'"></small></div>
+                        </div>
+
+                        <form method="post" th:action="@{/rota/{id}/planejamento(id=${remessa.id})}">
+                            <input type="hidden" name="destino" th:value="${pl.parametros.destino}">
+                            <input type="hidden" name="saida" th:value="${#temporals.format(pl.parametros.saida, 'yyyy-MM-dd''T''HH:mm')}">
+                            <input type="hidden" name="janelaInicio" th:value="${pl.parametros.janelaInicio}">
+                            <input type="hidden" name="janelaFim" th:value="${pl.parametros.janelaFim}">
+
+                            <h2 class="section-title">Grafo sintético · comparação de caminhos</h2>
+                            <div class="rota-grid">
+                                <figure class="card mapa">
+                                    <figcaption class="mapa-legenda">
+                                        <span><i class="leg-proposta"></i>Caminho proposto</span>
+                                        <span><i class="leg-urbana"></i>Via urbana</span>
+                                        <span><i class="leg-expressa"></i>Via expressa</span>
+                                    </figcaption>
+                                    <div class="mapa-scroll">
+                                        <svg viewBox="0 0 1000 590" role="img"
+                                             th:attr="aria-label=|Mapa da malha sintética. Caminho em destaque: ${destaque.descricao}, ${destaque.duracaoMinutos} minutos.|">
+                                            <g th:each="t : ${malha.trechos}" th:with="o=${malha.pontoDe(t.origem)},d=${malha.pontoDe(t.destino)}">
+                                                <line class="mapa-trecho"
+                                                      th:classappend="|${t.via.name() == 'EXPRESSA' ? 'expressa' : ''} ${pl.propostaUsa(t.chave) ? 'proposta' : (pl.alternativaUsa(t.chave) ? 'alternativa' : '')}|"
+                                                      th:attr="x1=${o.x},y1=${o.y},x2=${d.x},y2=${d.y}"/>
+                                            </g>
+                                            <g th:each="t : ${malha.trechos}" th:if="${pl.alternativaUsa(t.chave)}" th:with="o=${malha.pontoDe(t.origem)},d=${malha.pontoDe(t.destino)}">
+                                                <text class="mapa-tempo" text-anchor="middle"
+                                                      th:classappend="${pl.propostaUsa(t.chave)} ? 'proposta'"
+                                                      th:attr="x=${(o.x + d.x) / 2},y=${(o.y + d.y) / 2 - 10}"
+                                                      th:text="|${t.duracao(pl.horarioDePico)} min|">40 min</text>
+                                            </g>
+                                            <g th:each="p : ${malha.pontos}" class="mapa-ponto"
+                                               th:classappend="|${p.tipo.name() == 'HOSPITAL' ? 'hospital' : ''} ${p.tipo.name() == 'HEMOCENTRO' ? 'hemocentro' : ''} ${p.codigo == pl.destino.codigo ? 'destino' : ''} ${pl.propostaPassaPor(p.codigo) ? 'no-caminho' : ''}|">
+                                                <circle r="13" th:attr="cx=${p.x},cy=${p.y}"/>
+                                                <text th:attr="x=${p.rotuloX},y=${p.rotuloY},text-anchor=${p.rotuloAncora}" th:text="${p.nome}">Ponto</text>
+                                            </g>
+                                        </svg>
+                                    </div>
+                                    <p class="mapa-dica">Deslize o mapa para os lados para vê-lo por completo.</p>
+                                </figure>
+
+                                <section class="card viabilidade" th:classappend="${pl.viavel} ? 'viavel' : 'inviavel'">
+                                    <h2><span class="badge" th:classappend="${pl.viavel} ? 'badge-ok' : 'badge-alerta'" th:text="${pl.viavel} ? 'Rota viável' : 'Nenhuma rota viável'">Rota viável</span></h2>
+                                    <p th:if="${pl.proposta != null}"><strong>Alternativa proposta:</strong> <span th:text="${pl.proposta.descricao}"></span> · menor duração viável.</p>
+                                    <p th:unless="${pl.proposta != null}">Mesmo o caminho mais rápido descumpre algum critério. Ajuste a saída ou a janela de recebimento.</p>
+                                    <ul class="criterios">
+                                        <li th:each="c : ${destaque.criterios}" th:classappend="${c.atendido} ? '' : 'falha'">
+                                            <div><strong th:text="${c.nome}">Critério</strong><span th:text="${c.detalhe}">Detalhe</span></div>
+                                        </li>
+                                    </ul>
+                                </section>
                             </div>
-                            <div class="detour">
-                                <span>
-                                    Via P1: 50 min
-                                </span>
+
+                            <h2 class="section-title">Alternativas <small th:text="|${#lists.size(pl.alternativas)} caminhos mais rápidos até ${pl.destino.nome}|"></small></h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <caption class="sr-only">Caminhos comparados</caption>
+                                    <thead><tr><th scope="col">Caminho</th><th scope="col" class="num">Duração</th><th scope="col">Chegada</th><th scope="col">Atendimento</th><th scope="col" class="num">Tempo total</th><th scope="col">Situação</th></tr></thead>
+                                    <tbody>
+                                    <tr th:each="a : ${pl.alternativas}">
+                                        <td>
+                                            <label class="alternativa-opcao">
+                                                <input type="radio" name="caminho" th:value="${a.chave}" th:checked="${a.proposta}" th:disabled="${!a.viavel}">
+                                                <span><span th:text="${a.descricao}">Caminho</span> <span class="tag-proposta" th:if="${a.proposta}">· proposta</span></span>
+                                            </label>
+                                        </td>
+                                        <td class="num" th:text="|${a.duracaoMinutos} min|"></td>
+                                        <td th:text="${#temporals.format(a.chegada, 'HH:mm')}"></td>
+                                        <td th:text="|${#temporals.format(a.inicioAtendimento, 'HH:mm')}–${#temporals.format(a.fimAtendimento, 'HH:mm')}|"></td>
+                                        <td class="num" th:text="|${a.tempoTotalMinutos} min|"></td>
+                                        <td>
+                                            <span class="badge badge-ok" th:if="${a.viavel}">Viável</span>
+                                            <span class="badge badge-alerta" th:unless="${a.viavel}" th:text="|Inviável: ${#strings.listJoin(a.criteriosNaoAtendidos.![nome.toLowerCase()], ', ')}|"></span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="route-node destination">
-                                <strong>
-                                    Hospital Aurora
-                                </strong>
-                                <span>
-                                    Chegada · 10:10
-                                </span>
+                            <div class="actions">
+                                <button class="button" type="submit" th:disabled="${!pl.viavel}">Confirmar planejamento</button>
+                                <span class="muted" th:text="${pl.viavel} ? |Resultado esperado: ${remessa.codigo} · Rota planejada. O monitoramento continua até a entrega.| : 'Sem caminho viável, o planejamento não pode ser confirmado.'"></span>
                             </div>
-                        </figure>
-                        <section class="panel feasibility">
-                            <h2>
-                                ROTA VIÁVEL
-                            </h2>
-                            <p>
-                                Janela: 10:00–11:00
-                            </p>
-                            <p>
-                                Atendimento: 10:10–10:15
-                            </p>
-                            <p>
-                                Carga: 2 / 4 bolsas
-                            </p>
-                            <p>
-                                Tempo total: 45 / 90 min
-                            </p>
-                            <p>
-                                Validade na entrega: OK
-                            </p>
-                        </section>
-                    </div>
-                    <h2 class="section-title">
-                        Alternativa proposta: caminho direto · menor duração viável.
-                    </h2>
-                    <p>
-                        A capacidade, a janela e a autonomia térmica foram consideradas.
-                    </p>
-                    <div class="actions">
-                        <a class="button" href="/monitoramento" aria-label="Confirmar planejamento — abrir próxima tela do protótipo">
-                            Confirmar planejamento
-                        </a>
-                        <span>
-                            Resultado esperado: R-008 · Planejada
-                        </span>
-                    </div>
-                </div>
-                <footer>
-                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
-                </footer>
-            </main>
+                        </form>
+                    </th:block>
+                </th:block>
+            </th:block>
         </div>
-    </body>
+        <footer th:replace="~{fragments/layout :: rodape}"></footer>
+    </main>
+</div>
+</body>
 </html>

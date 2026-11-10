@@ -13,23 +13,18 @@ import br.com.rotavital.dto.*;
 import br.com.rotavital.model.*;
 import br.com.rotavital.service.*;
 
+/** Telas de estoque, requisição e alocação. Os dados comuns vêm de {@link TelasModel}. */
 @Controller
 public class TelasController {
-    private final UserService users;
     private final EstoqueService estoque;
     private final AlocacaoService alocacao;
+    private final MonitoramentoService monitoramento;
     private final UsuarioDaSessao sessao;
 
-    public TelasController(UserService users, EstoqueService estoque,
-                           AlocacaoService alocacao, UsuarioDaSessao sessao) {
-        this.users = users; this.estoque = estoque; this.alocacao = alocacao; this.sessao = sessao;
-    }
-
-    @ModelAttribute
-    public void comuns(Model model, Principal principal) {
-        if (principal != null) model.addAttribute("usuario", users.atual(principal.getName()));
-        model.addAttribute("componentes", TipoComponente.values());
-        model.addAttribute("tipos", TipoSanguineo.values());
+    public TelasController(EstoqueService estoque, AlocacaoService alocacao,
+                           MonitoramentoService monitoramento, UsuarioDaSessao sessao) {
+        this.estoque = estoque; this.alocacao = alocacao;
+        this.monitoramento = monitoramento; this.sessao = sessao;
     }
 
     @GetMapping({"/estoque", "/index.html"})
@@ -97,6 +92,7 @@ public class TelasController {
             if (requisicao.status() == StatusRequisicao.PENDENTE_ALOCACAO) {
                 model.addAttribute("proposta", alocacao.propor(requisicaoId));
             }
+            monitoramento.daRequisicao(requisicaoId).ifPresent(r -> model.addAttribute("remessa", r));
         }
         return "alocacao";
     }
@@ -111,16 +107,24 @@ public class TelasController {
                 throw new ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Selecione as bolsas.");
             }
             alocacao.confirmar(id, new ConfirmacaoReserva(codigosBolsas));
-            flash.addFlashAttribute("sucesso", "Reserva confirmada. As bolsas foram reservadas no estoque.");
+            flash.addFlashAttribute("sucesso",
+                "Reserva confirmada. As bolsas foram reservadas e o monitoramento térmico da remessa começou.");
         } catch (ResponseStatusException erro) {
             flash.addFlashAttribute("erro", erro.getReason());
         }
         return "redirect:/alocacao?requisicaoId=" + id;
     }
 
-    @GetMapping({"/rota", "/rota.html"})
-    public String rota() { return "rota"; }
-
-    @GetMapping({"/monitoramento", "/monitoramento.html"})
-    public String monitoramento() { return "monitoramento"; }
+    /** Abre a remessa de uma requisição alocada antes da existência do monitoramento. */
+    @PostMapping("/alocacao/{id}/monitoramento")
+    public String iniciarMonitoramento(@PathVariable Long id, Principal principal, RedirectAttributes flash) {
+        sessao.exigirDono(alocacao.consultar(id), principal);
+        try {
+            var remessa = monitoramento.iniciar(id);
+            flash.addFlashAttribute("sucesso", "Monitoramento iniciado: remessa " + remessa.codigo() + " aberta.");
+        } catch (ResponseStatusException erro) {
+            flash.addFlashAttribute("erro", erro.getReason());
+        }
+        return "redirect:/alocacao?requisicaoId=" + id;
+    }
 }

@@ -31,7 +31,7 @@ public class SecurityConfig {
         return http
             .authorizeHttpRequests(a -> a
                 .requestMatchers("/", "/login", "/login.html", "/registro", "/registro.html",
-                    "/css/**", "/js/**", "/error").permitAll()
+                    "/css/**", "/js/**", "/img/**", "/error").permitAll()
                 .anyRequest().authenticated())
             .exceptionHandling(e -> e.defaultAuthenticationEntryPointFor(
                 new org.springframework.security.web.authentication.HttpStatusEntryPoint(

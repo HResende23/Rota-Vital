@@ -3,6 +3,7 @@ package br.com.rotavital.service;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import br.com.rotavital.dto.PropostaAlocacao;
 import br.com.rotavital.dto.RequisicaoResposta;
 import br.com.rotavital.model.BolsaHemoComponente;
 import br.com.rotavital.model.Requisicao;
+import br.com.rotavital.model.ReservaConfirmada;
 import br.com.rotavital.model.StatusBolsa;
 import br.com.rotavital.model.StatusRequisicao;
 import br.com.rotavital.repository.BolsaHemoComponenteRepository;
@@ -25,14 +27,17 @@ public class AlocacaoService {
     private final RequisicaoRepository requisicoes;
     private final BolsaHemoComponenteRepository bolsas;
     private final CompatibilidadeService compatibilidade;
+    private final ApplicationEventPublisher eventos;
 
     public AlocacaoService(RequisicaoRepository requisicoes,
                            BolsaHemoComponenteRepository bolsas,
-                           CompatibilidadeService compatibilidade, UserRepository users) {
+                           CompatibilidadeService compatibilidade, UserRepository users,
+                           ApplicationEventPublisher eventos) {
         this.users = users;
         this.requisicoes = requisicoes;
         this.bolsas = bolsas;
         this.compatibilidade = compatibilidade;
+        this.eventos = eventos;
     }
 
     @Transactional
@@ -84,6 +89,9 @@ public class AlocacaoService {
         exigirElegibilidade(selecionadas, requisicao);
         selecionadas.forEach(BolsaHemoComponente::reservar);
         requisicao.alocar(selecionadas);
+        // O monitoramento escuta o evento e abre a remessa nesta mesma transação:
+        // se a abertura falhar, a reserva inteira é desfeita.
+        eventos.publishEvent(new ReservaConfirmada(requisicao.getId()));
         // JPA persiste os objetos gerenciados ao concluir a mesma transação.
         return RequisicaoResposta.de(requisicao);
     }

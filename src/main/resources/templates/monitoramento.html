@@ -1,160 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="Rota Vital: monitoramento da remessa — protótipo acadêmico de baixa fidelidade.">
-        <title>
-            Monitoramento | Rota Vital
-        </title>
-        <link rel="stylesheet" href="/css/styles.css">
-        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 32 32&#x27;%3E%3Crect width=&#x27;32&#x27; height=&#x27;32&#x27; fill=&#x27;%23333&#x27;/%3E%3Ctext x=&#x27;4&#x27; y=&#x27;23&#x27; fill=&#x27;white&#x27; font-size=&#x27;20&#x27; font-family=&#x27;sans-serif&#x27;%3ERV%3C/text%3E%3C/svg%3E">
-    </head>
-    <body>
-        <a class="skip-link" href="#conteudo">
-            Pular para o conteúdo
-        </a>
-        <header th:replace="~{fragments/layout :: topbar}"></header>
-        <div class="layout">
-            <aside th:replace="~{fragments/layout :: sidebar('monitoramento')}"></aside>
-            <main id="conteudo" class="screen screen-5">
-                <header class="page-heading">
-                    <p>
-                        T05 / HU05
-                    </p>
-                    <h1>
-                        Monitoramento da remessa
-                    </h1>
-                    <span>
-                        Operador de distribuição
-                    </span>
-                </header>
-                <div class="page-content"><p class="panel">Demonstração: esta etapa ainda não possui integração com backend.</p>
-                    <section class="panel ">
-                        <h2>
-                            R-008 · Em transporte · Caixa CX-01
-                        </h2>
-                        <p>
-                            Destino: Hospital Aurora | RV-014 | Bolsas B101 e B102
-                        </p>
+<head>
+    <th:block th:replace="~{fragments/layout :: metadados('Monitoramento', 'Rota Vital: monitoramento térmico da remessa, da reserva até a entrega.')}"></th:block>
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<header th:replace="~{fragments/layout :: topbar}"></header>
+<div class="layout">
+    <aside th:replace="~{fragments/layout :: sidebar('monitoramento')}"></aside>
+    <main id="conteudo" class="screen">
+        <header class="page-heading">
+            <p class="eyebrow">Etapa 05 · Cadeia fria</p>
+            <h1>Monitoramento da remessa</h1>
+            <p class="subtitle">O sensor da caixa térmica é acompanhado desde a confirmação da reserva até a entrega no hospital.</p>
+        </header>
+        <div class="page-content">
+            <th:block th:replace="~{fragments/layout :: mensagens}"></th:block>
+
+            <section class="card empty" th:if="${#lists.isEmpty(remessas)}">
+                <svg class="empty-icon" viewBox="0 0 32 32" aria-hidden="true">
+                    <path d="M16 2.5c-.5 0-.9.2-1.2.6C12.2 6.7 5.5 15.6 5.5 20.8a10.5 10.5 0 0 0 21 0c0-5.2-6.7-14.1-9.3-17.7-.3-.4-.7-.6-1.2-.6Z" fill="#fbe3e6"/>
+                    <polyline points="9.5,21 13,21 14.6,16.8 17.2,24.6 18.8,19.8 22.5,19.8" fill="none" stroke="#b3121f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h2>Nenhuma remessa monitorada</h2>
+                <p>O monitoramento começa automaticamente quando uma reserva de bolsas é confirmada na alocação.</p>
+                <a class="button" th:href="@{/alocacao}">Ir para alocação</a>
+            </section>
+
+            <th:block th:unless="${#lists.isEmpty(remessas)}">
+                <form class="card fields seletor" method="get" th:action="@{/monitoramento}">
+                    <label>Remessa
+                        <select name="remessaId">
+                            <option th:each="r : ${remessas}" th:value="${r.id}" th:text="${r.rotulo}" th:selected="${remessa != null and r.id == remessa.id}"></option>
+                        </select>
+                    </label>
+                    <button class="button button-secundario" type="submit">Abrir remessa</button>
+                </form>
+
+                <th:block th:if="${remessa != null}" th:with="r=${remessa}">
+                    <section class="card">
+                        <div class="panel-head">
+                            <div>
+                                <h2 th:text="|${r.codigo} · ${r.status.rotulo} · ${r.descricaoDaCaixa}|">R-001</h2>
+                                <p th:text="|Destino: ${r.plano != null ? r.plano.destinoNome : r.hospital} · Requisição ${r.requisicaoId} · ${r.quantidadeBolsas == 1 ? 'Bolsa' : 'Bolsas'} ${r.codigosBolsasTexto}|">Destino</p>
+                            </div>
+                            <span th:replace="~{fragments/layout :: statusRemessa(${r.status})}"></span>
+                        </div>
+                        <ol class="etapas" aria-label="Etapas da remessa">
+                            <li th:each="e : ${r.etapas}" th:class="${e.situacao}">
+                                <strong th:text="${e.nome}">Etapa</strong>
+                                <span th:if="${e.em != null}" th:text="${#temporals.format(e.em, 'dd/MM HH:mm')}"></span>
+                                <span th:if="${e.em == null and e.situacao == 'atual'}">Próxima etapa</span>
+                                <span th:if="${e.em == null and e.situacao == 'bloqueada'}">Bloqueada pelo alerta</span>
+                            </li>
+                        </ol>
+                        <p class="muted" th:if="${r.plano != null}"
+                           th:text="|Rota: ${r.plano.caminhoDescricao} · saída prevista ${#temporals.format(r.plano.saidaPrevista, 'HH:mm')} · chegada ${#temporals.format(r.plano.chegadaPrevista, 'HH:mm')} · janela ${#temporals.format(r.plano.janelaInicio, 'HH:mm')}–${#temporals.format(r.plano.janelaFim, 'HH:mm')}|"></p>
                     </section>
+
                     <div class="stats">
-                        <section class="stat">
-                            <h2>
-                                ÚLTIMA TEMPERATURA
-                            </h2>
-                            <p>
-                                8,0 °C
-                            </p>
+                        <section class="stat" th:classappend="${r.ultimaLeitura != null and r.ultimaLeitura.foraDaFaixa} ? 'stat-alerta' : 'stat-ok'">
+                            <h2>Última temperatura</h2>
+                            <p th:text="${r.ultimaLeitura != null} ? |${#numbers.formatDecimal(r.ultimaLeitura.temperatura, 1, 1, 'COMMA')} °C| : '—'">—</p>
+                            <span class="stat-note" th:text="${r.ultimaLeitura != null} ? ${r.ultimaLeitura.condicao.rotulo} : 'Aguardando a primeira leitura'"></span>
                         </section>
                         <section class="stat">
-                            <h2>
-                                FAIXA SIMULADA
-                            </h2>
-                            <p>
-                                2,0 a 6,0 °C
-                            </p>
+                            <h2>Faixa do componente</h2>
+                            <p th:text="${r.faixa.rotulo}">2,0 a 6,0 °C</p>
+                            <span class="stat-note" th:text="${r.componente.rotulo}"></span>
                         </section>
                         <section class="stat">
-                            <h2>
-                                ÚLTIMA LEITURA
-                            </h2>
-                            <p>
-                                10:05
-                            </p>
+                            <h2>Última leitura</h2>
+                            <p th:text="${r.ultimaLeitura != null} ? ${#temporals.format(r.ultimaLeitura.registradaEm, 'HH:mm')} : '—'">—</p>
+                            <span class="stat-note" th:text="|${#lists.size(r.leituras)} ${#lists.size(r.leituras) == 1 ? 'leitura' : 'leituras'} desde ${#temporals.format(r.monitoramentoIniciadoEm, 'dd/MM HH:mm')}|"></span>
                         </section>
                     </div>
-                    <section class="panel alert">
-                        <h2>
-                            ! Temperatura fora da faixa há 2 minutos
-                        </h2>
-                        <p class="alert-status">
-                            Desvio iniciado às 10:03 · Remessa Pendente de avaliação
-                        </p>
-                        <p>
-                            B101 e B102 afetadas · Reconhecer o alerta não libera as bolsas.
-                        </p>
+
+                    <section class="panel alerta-termico" role="alert" th:if="${r.emAlerta}">
+                        <h2><span class="alerta-icone" aria-hidden="true">!</span>
+                            <span th:text="${r.emDesvio} ? |Temperatura fora da faixa ${r.tempoForaDaFaixa}| : 'Alerta térmico registrado'">Alerta térmico</span></h2>
+                        <p class="alerta-status" th:text="|Desvio iniciado às ${#temporals.format(r.alerta.desvioIniciadoEm, 'HH:mm')} · alerta confirmado às ${#temporals.format(r.alerta.emitidoEm, 'HH:mm')} · remessa pendente de avaliação|"></p>
+                        <p th:text="|${r.codigosBolsasTexto} ${r.quantidadeBolsas == 1 ? 'bloqueada' : 'bloqueadas'} no estoque · Reconhecer o alerta não libera as bolsas.|"></p>
+                        <form method="post" th:if="${!r.alerta.reconhecido}" th:action="@{/monitoramento/{id}/alerta/reconhecimento(id=${r.id})}">
+                            <button class="button" type="submit">Reconhecer alerta</button>
+                        </form>
+                        <p class="muted" th:if="${r.alerta.reconhecido}" th:text="|Alerta reconhecido por ${r.alerta.reconhecidoPor} em ${#temporals.format(r.alerta.reconhecidoEm, 'dd/MM')} às ${#temporals.format(r.alerta.reconhecidoEm, 'HH:mm')}.|"></p>
                     </section>
+
+                    <section class="panel desvio" role="status" th:if="${r.emDesvio and !r.emAlerta}">
+                        <h2 th:text="|Temperatura fora da faixa ${r.tempoForaDaFaixa}|">Desvio</h2>
+                        <p th:text="|Desvio iniciado às ${#temporals.format(r.desvioIniciadoEm, 'HH:mm')}. Uma nova leitura fora da faixa confirma o alerta térmico e bloqueia as bolsas.|"></p>
+                    </section>
+
+                    <h2 class="section-title">Leituras do sensor</h2>
                     <div class="table-wrap">
                         <table>
-                            <caption class="sr-only">
-                                Leituras sintéticas de temperatura
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">
-                                        Horário
-                                    </th>
-                                    <th scope="col">
-                                        Temperatura
-                                    </th>
-                                    <th scope="col">
-                                        Conectividade
-                                    </th>
-                                    <th scope="col">
-                                        Condição
-                                    </th>
-                                </tr>
-                            </thead>
+                            <caption class="sr-only">Leituras de temperatura da remessa</caption>
+                            <thead><tr><th scope="col">Horário</th><th scope="col" class="num">Temperatura</th><th scope="col">Conectividade</th><th scope="col">Condição</th></tr></thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        10:00
-                                    </td>
-                                    <td>
-                                        4,0 °C
-                                    </td>
-                                    <td>
-                                        Conectada
-                                    </td>
-                                    <td>
-                                        Dentro da faixa
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        10:03
-                                    </td>
-                                    <td>
-                                        7,0 °C
-                                    </td>
-                                    <td>
-                                        Conectada
-                                    </td>
-                                    <td>
-                                        Início do desvio
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        10:05
-                                    </td>
-                                    <td>
-                                        8,0 °C
-                                    </td>
-                                    <td>
-                                        Conectada
-                                    </td>
-                                    <td>
-                                        Alerta térmico
-                                    </td>
-                                </tr>
+                            <tr th:each="l : ${r.leituras}" th:classappend="${l.foraDaFaixa} ? 'leitura-fora'">
+                                <td th:text="${#temporals.format(l.registradaEm, 'dd/MM HH:mm:ss')}"></td>
+                                <td class="num" th:classappend="${l.foraDaFaixa} ? 'temperatura-fora'" th:text="|${#numbers.formatDecimal(l.temperatura, 1, 1, 'COMMA')} °C|"></td>
+                                <td th:text="${l.conectividade.rotulo}"></td>
+                                <td><span class="badge" th:classappend="${l.condicao.name() == 'DENTRO_DA_FAIXA'} ? 'badge-ok' : (${l.condicao.name() == 'INICIO_DO_DESVIO'} ? 'badge-aviso' : 'badge-alerta')" th:text="${l.condicao.rotulo}"></span></td>
+                            </tr>
+                            <tr class="linha-vazia" th:if="${#lists.isEmpty(r.leituras)}"><td colspan="4">Nenhuma leitura registrada ainda.</td></tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <form class="card leitura-form" method="post" th:if="${r.monitorada}" th:action="@{/monitoramento/{id}/leituras(id=${r.id})}">
+                        <label>Temperatura (°C)
+                            <input type="number" name="temperatura" step="0.1" min="-50" max="60" required placeholder="Ex.: 4,5">
+                        </label>
+                        <label>Conectividade
+                            <select name="conectividade">
+                                <option th:each="c : ${conectividades}" th:value="${c}" th:text="${c.rotulo}"></option>
+                            </select>
+                        </label>
+                        <button class="button button-secundario" type="submit">Registrar leitura</button>
+                    </form>
+                    <p class="hint" th:if="${r.monitorada}">Simula o envio do sensor da caixa. Um sensor real usaria <code>POST /api/v1/remessas/{id}/leituras</code>.</p>
+
                     <div class="actions">
-                        <button class="button" type="button" disabled title="Ação ilustrativa, sem processamento">
-                            Reconhecer alerta
-                        </button>
-                        <span>
-                            Posição simulada: trecho Central–Aurora · atualização 10:05
-                        </span>
+                        <a class="button" th:if="${r.status.name() == 'AGUARDANDO_ROTA'}" th:href="@{/rota(remessaId=${r.id})}">Planejar rota</a>
+                        <form class="inline-form" method="post" th:if="${r.status.name() == 'PLANEJADA'}" th:action="@{/monitoramento/{id}/transporte(id=${r.id})}">
+                            <button class="button" type="submit">Iniciar transporte</button>
+                        </form>
+                        <a class="button button-secundario" th:if="${r.status.name() == 'PLANEJADA'}" th:href="@{/rota(remessaId=${r.id})}">Replanejar rota</a>
+                        <form class="inline-form" method="post" th:if="${r.status.name() == 'EM_TRANSPORTE'}" th:action="@{/monitoramento/{id}/entrega(id=${r.id})}">
+                            <button class="button" type="submit">Confirmar entrega</button>
+                        </form>
+                        <span class="muted" th:if="${r.status.name() == 'ENTREGUE'}" th:text="|Entregue em ${#temporals.format(r.entregueEm, 'dd/MM')} às ${#temporals.format(r.entregueEm, 'HH:mm')}; monitoramento encerrado.|"></span>
+                        <span class="muted" th:if="${r.status.name() == 'EM_TRANSPORTE'}" th:text="|Em transporte desde ${#temporals.format(r.saidaEm, 'HH:mm')}.|"></span>
                     </div>
-                </div>
-                <footer>
-                    Simulação acadêmica · compatibilidade didática · não substitui protocolo clínico.
-                </footer>
-            </main>
+                </th:block>
+            </th:block>
         </div>
-    </body>
+        <footer th:replace="~{fragments/layout :: rodape}"></footer>
+    </main>
+</div>
+</body>
 </html>
