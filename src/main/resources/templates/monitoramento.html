@@ -75,7 +75,50 @@
                             <span class="stat-note" th:text="|${#lists.size(r.leituras)} ${#lists.size(r.leituras) == 1 ? 'leitura' : 'leituras'} desde ${#temporals.format(r.monitoramentoIniciadoEm, 'dd/MM HH:mm')}|"></span>
                         </section>
                     </div>
+                    <section class="card" th:if="${pearson != null}">
+                    <div class="panel-head">
+                        <div>
+                            <p class="eyebrow">Análise estatística</p>
+                            <h2>Correlação de Pearson</h2>
+                        </div>
+                    </div>
 
+                    <div class="stats">
+                        <section class="stat">
+                            <h2>Coeficiente r</h2>
+                            <p th:text="${#numbers.formatDecimal(pearson.r, 1, 2, 'COMMA')}">0,00</p>
+                            <span class="stat-note"
+                                th:text="|Correlação ${pearson.direcao} ${pearson.intensidade}|">
+                                Correlação positiva forte
+                            </span>
+                        </section>
+
+                        <section class="stat">
+                            <h2>Coeficiente r²</h2>
+                            <p th:text="|${#numbers.formatDecimal(pearson.r2 * 100, 1, 1, 'COMMA')}%|">
+                                0,0%
+                            </p>
+                            <span class="stat-note">
+                                Variação acompanhada pela tendência linear
+                            </span>
+                        </section>
+
+                        <section class="stat">
+                            <h2>Tendência térmica</h2>
+                            <p th:text="${pearson.r > 0 ? '↑' : (pearson.r < 0 ? '↓' : '→')}">↑</p>
+                            <span class="stat-note"
+                                th:text="${pearson.interpretacao}">
+                                Tendência da temperatura
+                            </span>
+                        </section>
+                    </div>
+
+                    <p class="hint">
+                        O cálculo usa o tempo decorrido como X e a temperatura registrada como Y.
+                        O Pearson é apenas um indicador estatístico e não substitui a regra de segurança
+                        das duas leituras consecutivas fora da faixa.
+                    </p>
+                </section>
                     <section class="panel alerta-termico" role="alert" th:if="${r.emAlerta}">
                         <h2><span class="alerta-icone" aria-hidden="true">!</span>
                             <span th:text="${r.emDesvio} ? |Temperatura fora da faixa ${r.tempoForaDaFaixa}| : 'Alerta térmico registrado'">Alerta térmico</span></h2>

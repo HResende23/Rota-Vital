@@ -4,29 +4,44 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
-import jakarta.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import br.com.rotavital.dto.*;
-import br.com.rotavital.model.Conectividade;
-import br.com.rotavital.service.MonitoramentoService;
 
+import br.com.rotavital.dto.LeituraResposta;
+import br.com.rotavital.dto.NovaLeitura;
+import br.com.rotavital.dto.RemessaResposta;
+import br.com.rotavital.dto.RemessaResumo;
+import br.com.rotavital.model.Conectividade;
+import br.com.rotavital.service.EstatisticaService;
+import br.com.rotavital.service.MonitoramentoService;
+import jakarta.validation.Valid;
 /** Tela 05: leituras do sensor, alerta térmico e ciclo de transporte da remessa. */
 @Controller
 public class MonitoramentoTelaController {
     private static final Locale PT_BR = Locale.forLanguageTag("pt-BR");
 
     private final MonitoramentoService monitoramento;
+    private final EstatisticaService estatistica;
     private final UsuarioDaSessao sessao;
+    
+    public MonitoramentoTelaController(
+        MonitoramentoService monitoramento,
+        EstatisticaService estatistica,
+        UsuarioDaSessao sessao) {
 
-    public MonitoramentoTelaController(MonitoramentoService monitoramento, UsuarioDaSessao sessao) {
-        this.monitoramento = monitoramento;
-        this.sessao = sessao;
-    }
+    this.monitoramento = monitoramento;
+    this.estatistica = estatistica;
+    this.sessao = sessao;
+}
 
     @GetMapping({"/monitoramento", "/monitoramento.html"})
     public String monitoramento(@RequestParam(required = false) Long remessaId, Model model,
@@ -41,6 +56,10 @@ public class MonitoramentoTelaController {
             RemessaResposta remessa = monitoramento.consultar(selecionada);
             sessao.exigirDono(remessa, principal);
             model.addAttribute("remessa", remessa);
+            model.addAttribute(
+    "pearson",
+    estatistica.calcularPearson(remessa.leituras())
+);
         }
         return "monitoramento";
     }
